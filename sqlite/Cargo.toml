@@ -4,6 +4,9 @@ version = "0.1.0"
 edition = "2021"
 license = "GPL-3.0-or-later"
 description = "SQLite backend for xql"
+homepage = "https://github.com/arch-mage/xql"
+repository = "https://github.com/arch-mage/xql"
+documentation = "https://docs.rs/xql"
 
 [dependencies]
 sqlx = { version = "0.5", default-features = false, features = ["runtime-tokio-rustls", "sqlite"] }
