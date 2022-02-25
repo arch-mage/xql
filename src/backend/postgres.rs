@@ -1,6 +1,6 @@
 use std::fmt::Write;
 
-impl crate::build::Dialect for xql_postgres::Postgres {
+impl crate::build::Dialect for xql_sqlx_postgres::Postgres {
     fn quote_literal(val: &str, buff: &mut String) {
         super::quote(val, '\'', buff)
     }
@@ -14,5 +14,5 @@ impl crate::build::Dialect for xql_postgres::Postgres {
     }
 }
 
-impl_sqlx!(xql_postgres, Postgres);
-generate_funcs!(xql_postgres, Postgres);
+impl_sqlx!(xql_sqlx_postgres, Postgres);
+generate_funcs!(xql_sqlx_postgres, Postgres);

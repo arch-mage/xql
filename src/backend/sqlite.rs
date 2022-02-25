@@ -1,4 +1,4 @@
-impl crate::build::Dialect for xql_sqlite::Sqlite {
+impl crate::build::Dialect for xql_sqlx_sqlite::Sqlite {
     fn quote_literal(val: &str, buff: &mut String) {
         super::quote(val, '\'', buff)
     }
@@ -12,5 +12,5 @@ impl crate::build::Dialect for xql_sqlite::Sqlite {
     }
 }
 
-impl_sqlx!(xql_sqlite, Sqlite);
-generate_funcs!(xql_sqlite, Sqlite);
+impl_sqlx!(xql_sqlx_sqlite, Sqlite);
+generate_funcs!(xql_sqlx_sqlite, Sqlite);

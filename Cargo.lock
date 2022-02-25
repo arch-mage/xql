@@ -1397,27 +1397,27 @@ version = "0.1.0"
 dependencies = [
  "sqlx",
  "tokio",
- "xql-mysql",
- "xql-postgres",
- "xql-sqlite",
+ "xql-sqlx-mysql",
+ "xql-sqlx-postgres",
+ "xql-sqlx-sqlite",
 ]
 
 [[package]]
-name = "xql-mysql"
+name = "xql-sqlx-mysql"
 version = "0.1.0"
 dependencies = [
  "sqlx",
 ]
 
 [[package]]
-name = "xql-postgres"
+name = "xql-sqlx-postgres"
 version = "0.1.0"
 dependencies = [
  "sqlx",
 ]
 
 [[package]]
-name = "xql-sqlite"
+name = "xql-sqlx-sqlite"
 version = "0.1.0"
 dependencies = [
  "sqlx",
