@@ -1,0 +1,34 @@
+[workspace]
+members = [
+    ".",
+    "postgres",
+    "mysql",
+    "sqlite",
+]
+
+[package]
+name = "xql"
+version = "0.1.0"
+readme = "README.md"
+edition = "2021"
+repository = "https://github.com/arch-mage/xql"
+description = "SQL query builder"
+documentation = "https://docs.rs/xql"
+license = "GPL-3.0-or-later"
+keywords = ["database", "sqlx", "postgres", "mysql", "sqlite"]
+categories = ["database"]
+authors = ["M. Awad Syahid <m.awad.syahid@gmail.com>"]
+
+[features]
+postgres = ["xql-postgres"]
+mysql = ["xql-mysql"]
+sqlite = ["xql-sqlite"]
+
+[dependencies]
+xql-postgres = { path = "postgres", optional = true }
+xql-mysql = { path = "mysql", optional = true }
+xql-sqlite = { path = "sqlite", optional = true }
+
+[dev-dependencies]
+sqlx = { version = "0.5", default-features = false, features = ["runtime-tokio-rustls", "postgres", "mysql", "sqlite", "macros"] }
+tokio = { version = "1.17", default-features = false, features = ["macros", "rt-multi-thread"] }

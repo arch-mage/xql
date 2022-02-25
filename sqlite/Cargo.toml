@@ -1,0 +1,7 @@
+[package]
+name = "xql-sqlite"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+sqlx = { version = "0.5", default-features = false, features = ["runtime-tokio-rustls", "sqlite"] }
