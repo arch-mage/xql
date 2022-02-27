@@ -1,15 +1,16 @@
 #![deny(missing_debug_implementations, missing_copy_implementations)]
+#![cfg_attr(docsrs, feature(doc_cfg))]
 #![doc = include_str!("../README.md")]
 
-mod backend;
-mod clause;
-mod expr;
-mod func;
-mod item;
-mod ops;
-mod stmt;
-mod table_expr;
-mod value;
+pub mod backend;
+pub mod clause;
+pub mod expr;
+pub mod func;
+pub mod item;
+pub mod ops;
+pub mod stmt;
+pub mod table_expr;
+pub mod value;
 
 mod build;
 mod macros;
@@ -39,16 +40,8 @@ pub use ops::{cross_join, join, natural_join};
 pub use ops::{full_join, left_join, right_join};
 pub use ops::{natural_full_join, natural_left_join, natural_right_join};
 
-// stmt
-pub use stmt::delete::Delete;
-pub use stmt::insert::Insert;
-pub use stmt::select::Select;
-pub use stmt::update::Update;
-pub use stmt::values::Values;
-
-pub use backend::Query;
-
 #[cfg(feature = "postgres")]
+#[cfg_attr(docsrs, doc(cfg(feature = "postgres")))]
 pub mod postgres {
     pub use crate::backend::postgres::fetch_one;
     pub use crate::backend::postgres::fetch_one_as;
@@ -64,6 +57,7 @@ pub mod postgres {
 }
 
 #[cfg(feature = "mysql")]
+#[cfg_attr(docsrs, doc(cfg(feature = "mysql")))]
 pub mod mysql {
     pub use crate::backend::mysql::fetch_one;
     pub use crate::backend::mysql::fetch_one_as;
@@ -79,6 +73,7 @@ pub mod mysql {
 }
 
 #[cfg(feature = "sqlite")]
+#[cfg_attr(docsrs, doc(cfg(feature = "sqlite")))]
 pub mod sqlite {
     pub use crate::backend::sqlite::fetch_one;
     pub use crate::backend::sqlite::fetch_one_as;

@@ -20,6 +20,10 @@ keywords = ["database", "sqlx", "postgres", "mysql", "sqlite"]
 categories = ["database"]
 authors = ["M. Awad Syahid <m.awad.syahid@gmail.com>"]
 
+[package.metadata.docs.rs]
+features = ["postgres", "mysql", "sqlite"]
+rustdoc-args = ["--cfg", "docsrs"]
+
 [features]
 postgres = ["xql-sqlx-postgres"]
 mysql = ["xql-sqlx-mysql"]

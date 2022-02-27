@@ -305,7 +305,7 @@ where
 }
 
 /// Represent a `LIMIT` clause.
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[repr(transparent)]
 pub struct Limit(pub(crate) u32);
 
@@ -323,7 +323,7 @@ impl std::convert::From<u32> for Limit {
 }
 
 /// Represent a `OFFSET` clause.
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[repr(transparent)]
 pub struct Offset(pub(crate) u32);
 
