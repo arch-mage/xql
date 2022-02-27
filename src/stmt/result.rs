@@ -4,8 +4,8 @@ use crate::clause;
 pub struct Result<'a> {
     pub(crate) with: Option<clause::With<'a>>,
     pub(crate) data: crate::stmt::data::Data<'a>,
-    pub(crate) limit: Option<clause::Limit<'a>>,
-    pub(crate) offset: Option<clause::Offset<'a>>,
+    pub(crate) limit: Option<clause::Limit>,
+    pub(crate) offset: Option<clause::Offset>,
 }
 
 stmt_common!(Result);

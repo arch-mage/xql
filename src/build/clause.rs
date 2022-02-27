@@ -112,16 +112,16 @@ impl<'a> Build<'a> for crate::clause::With<'a> {
     }
 }
 
-impl<'a> Build<'a> for crate::clause::Limit<'a> {
+impl<'a> Build<'a> for crate::clause::Limit {
     fn build<D: Dialect>(self, sql: &mut String, args: &mut Vec<crate::value::Value<'a>>) {
         sql.push_str("LIMIT ");
-        self.0.build::<D>(sql, args);
+        crate::value::Value::from(self.0 as i64).build::<D>(sql, args);
     }
 }
 
-impl<'a> Build<'a> for crate::clause::Offset<'a> {
+impl<'a> Build<'a> for crate::clause::Offset {
     fn build<D: Dialect>(self, sql: &mut String, args: &mut Vec<crate::value::Value<'a>>) {
         sql.push_str("OFFSET ");
-        self.0.build::<D>(sql, args);
+        crate::value::Value::from(self.0 as i64).build::<D>(sql, args);
     }
 }

@@ -307,45 +307,38 @@ where
 /// Represent a `LIMIT` clause.
 #[derive(Clone, Debug, PartialEq, Eq)]
 #[repr(transparent)]
-pub struct Limit<'a>(pub(crate) Expr<'a>);
+pub struct Limit(pub(crate) u32);
 
-impl std::fmt::Display for Limit<'_> {
+impl std::fmt::Display for Limit {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(f, "LIMIT {}", self.0)
     }
 }
 
-impl<'a, E> std::convert::From<E> for Limit<'a>
-where
-    E: Into<Expr<'a>>,
-{
+impl std::convert::From<u32> for Limit {
     #[inline]
-    fn from(expr: E) -> Self {
-        Limit(expr.into())
+    fn from(val: u32) -> Self {
+        Limit(val)
     }
 }
 
 /// Represent a `OFFSET` clause.
 #[derive(Clone, Debug, PartialEq, Eq)]
 #[repr(transparent)]
-pub struct Offset<'a>(pub(crate) Expr<'a>);
+pub struct Offset(pub(crate) u32);
 
-impl std::fmt::Display for Offset<'_> {
+impl std::fmt::Display for Offset {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(f, "OFFSET {}", self.0)
     }
 }
 
-impl<'a, E> std::convert::From<E> for Offset<'a>
-where
-    E: Into<Expr<'a>>,
-{
+impl std::convert::From<u32> for Offset {
     #[inline]
-    fn from(expr: E) -> Self {
-        Offset(expr.into())
+    fn from(val: u32) -> Self {
+        Offset(val)
     }
 }
-
 #[cfg(test)]
 mod tests {
     use crate::clause::From;

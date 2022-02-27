@@ -1,5 +1,4 @@
 use crate::clause;
-use crate::expr::Expr;
 use crate::stmt::result::Result;
 
 /// `VALUES` statement builder.
@@ -20,24 +19,18 @@ impl std::fmt::Display for Values<'_> {
 }
 
 impl<'a> Values<'a> {
-    pub fn limit<E>(self, expr: E) -> Result<'a>
-    where
-        E: Into<Expr<'a>>,
-    {
+    pub fn limit(self, limit: u32) -> Result<'a> {
         Result {
             data: self.into(),
-            limit: Some(clause::Limit(expr.into())),
+            limit: Some(clause::Limit(limit)),
             ..Default::default()
         }
     }
 
-    pub fn offset<E>(self, expr: E) -> Result<'a>
-    where
-        E: Into<Expr<'a>>,
-    {
+    pub fn offset(self, offset: u32) -> Result<'a> {
         Result {
             data: self.into(),
-            offset: Some(clause::Offset(expr.into())),
+            offset: Some(clause::Offset(offset)),
             ..Default::default()
         }
     }
