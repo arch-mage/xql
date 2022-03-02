@@ -30,6 +30,11 @@ impl<'a> Build<'a> for crate::expr::Expr<'a> {
                 val.build::<D>(sql, args);
                 sql.push(')');
             }
+            crate::expr::Expr::SubQuery(val) => {
+                sql.push('(');
+                val.build::<D>(sql, args);
+                sql.push(')');
+            }
         }
     }
 }

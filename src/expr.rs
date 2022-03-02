@@ -1,5 +1,8 @@
 use crate::item::ColumnRef;
 use crate::item::FuncCall;
+use crate::stmt::data::Data;
+use crate::stmt::select::Select;
+use crate::stmt::values::Values;
 use crate::value::Value;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -12,6 +15,7 @@ pub enum Expr<'a> {
     Infix(Box<Expr<'a>>, &'static str, Box<Expr<'a>>),
     Postfix(Box<Expr<'a>>, &'static str),
     Paren(Box<Expr<'a>>),
+    SubQuery(Data<'a>),
 }
 
 impl std::fmt::Display for Expr<'_> {
@@ -24,6 +28,7 @@ impl std::fmt::Display for Expr<'_> {
             Expr::Prefix(op, expr) => write!(f, "{op} {expr}"),
             Expr::Postfix(expr, op) => write!(f, "{expr} {op}"),
             Expr::Paren(expr) => write!(f, "({expr})"),
+            Expr::SubQuery(val) => write!(f, "({val})"),
         }
     }
 }
@@ -63,6 +68,27 @@ impl<'a> std::convert::From<FuncCall<'a>> for Expr<'a> {
     #[inline]
     fn from(val: FuncCall<'a>) -> Self {
         Expr::FuncCall(val)
+    }
+}
+
+impl<'a> std::convert::From<Data<'a>> for Expr<'a> {
+    #[inline]
+    fn from(val: Data<'a>) -> Self {
+        Expr::SubQuery(val)
+    }
+}
+
+impl<'a> std::convert::From<Select<'a>> for Expr<'a> {
+    #[inline]
+    fn from(val: Select<'a>) -> Self {
+        Expr::SubQuery(val.into())
+    }
+}
+
+impl<'a> std::convert::From<Values<'a>> for Expr<'a> {
+    #[inline]
+    fn from(val: Values<'a>) -> Self {
+        Expr::SubQuery(val.into())
     }
 }
 
@@ -185,5 +211,13 @@ mod tests {
         let cond2 = or("c", "d");
         let cond = and(paren(cond1), paren(cond2));
         assert_eq!(cond.to_string(), "(a OR b) AND (c OR d)");
+    }
+
+    #[test]
+    fn subquery() {
+        use crate::stmt::select;
+        use crate::stmt::values;
+        let query = and(select([true]), values([(false,)]));
+        assert_eq!(query.to_string(), "(SELECT true) AND (VALUES (false))");
     }
 }

@@ -1,6 +1,9 @@
 use crate::expr::Expr;
 use crate::item::FuncCall;
 use crate::item::TableRef;
+use crate::stmt::select::Select;
+use crate::stmt::values::Values;
+use crate::stmt::data::Data;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum TableExpr<'a> {
@@ -15,6 +18,8 @@ pub enum TableExpr<'a> {
     NaturalRightJoin(Box<TableExpr<'a>>, Box<TableExpr<'a>>),
     NaturalFullJoin(Box<TableExpr<'a>>, Box<TableExpr<'a>>),
     CrossJoin(Box<TableExpr<'a>>, Box<TableExpr<'a>>),
+
+    SubQuery(Data<'a>),
 }
 
 impl std::fmt::Display for TableExpr<'_> {
@@ -32,6 +37,8 @@ impl std::fmt::Display for TableExpr<'_> {
             TableExpr::NaturalRightJoin(left, right) => write!(f, "{left} NATURAL RIGHT JOIN {right}"),
             TableExpr::NaturalFullJoin(left, right) => write!(f, "{left} NATURAL FULL JOIN {right}"),
             TableExpr::CrossJoin(left, right) => write!(f, "{left} CROSS JOIN {right}"),
+            TableExpr::SubQuery(val) => write!(f, "({val})"),
+            
         }
     }
 }
@@ -57,6 +64,27 @@ impl<'a> std::convert::From<FuncCall<'a>> for TableExpr<'a> {
     }
 }
 
+impl<'a> std::convert::From<Data<'a>> for TableExpr<'a> {
+    #[inline]
+    fn from(val: Data<'a>) -> Self {
+        TableExpr::SubQuery(val)
+    }
+}
+
+impl<'a> std::convert::From<Select<'a>> for TableExpr<'a> {
+    #[inline]
+    fn from(val: Select<'a>) -> Self {
+        TableExpr::SubQuery(val.into())
+    }
+}
+
+impl<'a> std::convert::From<Values<'a>> for TableExpr<'a> {
+    #[inline]
+    fn from(val: Values<'a>) -> Self {
+        TableExpr::SubQuery(val.into())
+    }
+}
+
 #[test]
 #[cfg(test)]
 fn test() {
@@ -70,6 +98,9 @@ fn test() {
     use crate::ops::natural_left_join;
     use crate::ops::natural_right_join;
     use crate::ops::right_join;
+    use crate::ops::as_table;
+    use crate::ops::as_field;
+    use crate::stmt::select;
 
     let query = join("a", "b", eq(("a", "id"), ("b", "id")));
     assert_eq!(query.to_string(), "a JOIN b ON a.id = b.id");
@@ -91,4 +122,7 @@ fn test() {
 
     let query = cross_join("a", "b");
     assert_eq!(query.to_string(), "a CROSS JOIN b");
+
+    let query = select([("sub", "one"), ("sub", "two")]).from(as_table(select([as_field(1, "one"), as_field(2, "two")]), "sub"));
+    assert_eq!(query.to_string(), "SELECT sub.one, sub.two FROM (SELECT 1 AS one, 2 AS two) AS sub");
 }

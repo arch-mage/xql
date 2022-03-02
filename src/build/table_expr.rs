@@ -34,6 +34,11 @@ impl<'a> Build<'a> for crate::table_expr::TableExpr<'a> {
             crate::table_expr::TableExpr::CrossJoin(left, right) => {
                 join!(D, sql, args, left, "CROSS JOIN", right)
             }
+            crate::table_expr::TableExpr::SubQuery(val) => {
+                sql.push('(');
+                val.build::<D>(sql, args);
+                sql.push(')');
+            }
         }
     }
 }
