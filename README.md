@@ -114,19 +114,19 @@ async fn execute(pool: sqlx::Pool<sqlx::Postgres>) -> Result<(), sqlx::Error> {
 
 #[cfg(all(not(feature = "postgres"), feature = "mysql", not(feature = "sqlite")))]
 async fn execute(pool: sqlx::Pool<sqlx::Mysql>) -> Result<(), sqlx::Error> {
-    xql::postgres::fetch_all(pool, insert).await?;
-    xql::postgres::fetch_all(pool, select).await?;
-    xql::postgres::fetch_all(pool, update).await?;
-    xql::postgres::fetch_all(pool, delete).await?;
+    xql::mysql::fetch_all(pool, insert).await?;
+    xql::mysql::fetch_all(pool, select).await?;
+    xql::mysql::fetch_all(pool, update).await?;
+    xql::mysql::fetch_all(pool, delete).await?;
     Ok(());
 }
 
 #[cfg(all(not(feature = "postgres"), not(feature = "mysql"), feature = "sqlite"))]
 async fn execute(pool: sqlx::Pool<sqlx::Sqlite>) -> Result<(), sqlx::Error> {
-    xql::postgres::fetch_all(pool, insert).await?;
-    xql::postgres::fetch_all(pool, select).await?;
-    xql::postgres::fetch_all(pool, update).await?;
-    xql::postgres::fetch_all(pool, delete).await?;
+    xql::sqlite::fetch_all(pool, insert).await?;
+    xql::sqlite::fetch_all(pool, select).await?;
+    xql::sqlite::fetch_all(pool, update).await?;
+    xql::sqlite::fetch_all(pool, delete).await?;
     Ok(());
 }
 ```
