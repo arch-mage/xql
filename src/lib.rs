@@ -3,6 +3,7 @@
 #![doc = include_str!("../README.md")]
 
 pub mod backend;
+pub mod blanket;
 pub mod clause;
 pub mod expr;
 pub mod func;
