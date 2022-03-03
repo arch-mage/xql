@@ -5,7 +5,7 @@ use crate::item::Order;
 
 macro_rules! gen_method {
     ($method:ident) => {
-        #[doc = concat!("A short hand for [`crate::ops::", stringify!($method), "`]", "(crate::ops::", stringify!($method), ").")]
+        #[doc = concat!("A short hand for [`xql::ops::", stringify!($method), "`]", "(crate::ops::", stringify!($method), ").")]
         #[doc = ""]
         #[doc = "```"]
         #[doc = concat!("use xql::ops::", stringify!($method), ";")]
@@ -20,7 +20,7 @@ macro_rules! gen_method {
     };
 
     ($method:ident as $alias:ident) => {
-        #[doc = concat!("An alias for [`", stringify!($method), "`]", "(crate::blanket::ExprExt::", stringify!($method), ").")]
+        #[doc = concat!("An alias for [`xql::ops::", stringify!($method), "`]", "(crate::blanket::ExprExt::", stringify!($method), ").")]
         #[doc = ""]
         #[doc = "```"]
         #[doc = concat!("use xql::ops::", stringify!($method), ";")]
@@ -59,7 +59,7 @@ pub trait ExprExt<'a>: Sized + Into<Expr<'a>> {
     gen_method!(like);
     gen_method!(ilike);
 
-    /// A short hand for [`crate::ops::as_field`](crate::ops::as_field).
+    /// A short hand for [`xql::ops::as_field`](crate::ops::as_field).
     ///
     /// ```
     /// use xql::ops::as_field;
@@ -72,7 +72,7 @@ pub trait ExprExt<'a>: Sized + Into<Expr<'a>> {
         crate::ops::as_field(self, alias)
     }
 
-    /// A short hand for [`crate::ops::isnull`](crate::ops::isnull).
+    /// A short hand for [`xql::ops::isnull`](crate::ops::isnull).
     ///
     /// ```
     /// use xql::ops::isnull;
@@ -85,7 +85,7 @@ pub trait ExprExt<'a>: Sized + Into<Expr<'a>> {
         crate::ops::isnull(self)
     }
 
-    /// A short hand for [`crate::ops::paren`](crate::ops::paren).
+    /// A short hand for [`xql::ops::paren`](crate::ops::paren).
     ///
     /// ```
     /// use xql::ops::paren;
@@ -98,7 +98,7 @@ pub trait ExprExt<'a>: Sized + Into<Expr<'a>> {
         crate::ops::paren(self)
     }
 
-    /// A short hand for [`crate::ops::asc`](crate::ops::asc).
+    /// A short hand for [`xql::ops::asc`](crate::ops::asc).
     ///
     /// ```
     /// use xql::ops::asc;

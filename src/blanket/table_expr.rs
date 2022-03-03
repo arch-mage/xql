@@ -2,7 +2,7 @@ use crate::table_expr::TableExpr;
 
 macro_rules! gen_method {
     ($join:ident cond) => {
-        #[doc = concat!("A short hand for [`crate::ops::", stringify!($join), "`]", "(crate::ops::", stringify!($join), ").")]
+        #[doc = concat!("A short hand for [`xql::ops::", stringify!($join), "`]", "(crate::ops::", stringify!($join), ").")]
         #[doc = ""]
         #[doc = "```"]
         #[doc = "use xql::ops::eq;"]
@@ -25,7 +25,7 @@ macro_rules! gen_method {
     };
 
     ($join:ident) => {
-        #[doc = concat!("A short hand for [`crate::ops::", stringify!($join), "`]", "(crate::ops::", stringify!($join), ").")]
+        #[doc = concat!("A short hand for [`xql::ops::", stringify!($join), "`]", "(crate::ops::", stringify!($join), ").")]
         #[doc = ""]
         #[doc = "```"]
         #[doc = "use xql::ops::eq;"]
