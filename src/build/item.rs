@@ -1,20 +1,20 @@
-use super::Build;
 use super::Dialect;
+use super::ToSql;
 
-impl<'a> Build<'a> for crate::value::Value<'a> {
+impl<'a> ToSql<'a> for crate::value::Value<'a> {
     fn build<D: Dialect>(self, sql: &mut String, args: &mut Vec<crate::value::Value<'a>>) {
         args.push(self);
-        D::bind_param(args.len(), sql);
+        D::bind_param(args.len(), self, sql);
     }
 }
 
-impl<'a> Build<'a> for crate::item::Ident<'a> {
+impl<'a> ToSql<'a> for crate::item::Ident<'a> {
     fn build<D: Dialect>(self, sql: &mut String, _: &mut Vec<crate::value::Value<'a>>) {
         D::quote_ident(self.0, sql);
     }
 }
 
-impl<'a> Build<'a> for crate::item::Sort {
+impl<'a> ToSql<'a> for crate::item::Sort {
     #[inline]
     fn build<D: Dialect>(self, sql: &mut String, _: &mut Vec<crate::value::Value<'a>>) {
         match self {
@@ -24,7 +24,7 @@ impl<'a> Build<'a> for crate::item::Sort {
     }
 }
 
-impl<'a> Build<'a> for crate::item::Order<'a> {
+impl<'a> ToSql<'a> for crate::item::Order<'a> {
     fn build<D: Dialect>(self, sql: &mut String, args: &mut Vec<crate::value::Value<'a>>) {
         self.0.build::<D>(sql, args);
         if let Some(sort) = self.1 {
@@ -34,7 +34,7 @@ impl<'a> Build<'a> for crate::item::Order<'a> {
     }
 }
 
-impl<'a> Build<'a> for crate::item::Field<'a> {
+impl<'a> ToSql<'a> for crate::item::Field<'a> {
     fn build<D: Dialect>(self, sql: &mut String, args: &mut Vec<crate::value::Value<'a>>) {
         self.expr.build::<D>(sql, args);
         if let Some(alias) = self.alias {
@@ -44,7 +44,7 @@ impl<'a> Build<'a> for crate::item::Field<'a> {
     }
 }
 
-impl<'a> Build<'a> for crate::item::Table<'a> {
+impl<'a> ToSql<'a> for crate::item::Table<'a> {
     fn build<D: Dialect>(self, sql: &mut String, args: &mut Vec<crate::value::Value<'a>>) {
         self.table.build::<D>(sql, args);
         if let Some(alias) = self.alias {
@@ -54,7 +54,7 @@ impl<'a> Build<'a> for crate::item::Table<'a> {
     }
 }
 
-impl<'a> Build<'a> for crate::item::ColumnRef<'a> {
+impl<'a> ToSql<'a> for crate::item::ColumnRef<'a> {
     #[inline]
     fn build<D: Dialect>(self, sql: &mut String, args: &mut Vec<crate::value::Value<'a>>) {
         match self {
@@ -67,7 +67,7 @@ impl<'a> Build<'a> for crate::item::ColumnRef<'a> {
     }
 }
 
-impl<'a> Build<'a> for crate::item::FuncRef<'a> {
+impl<'a> ToSql<'a> for crate::item::FuncRef<'a> {
     #[inline]
     fn build<D: Dialect>(self, sql: &mut String, args: &mut Vec<crate::value::Value<'a>>) {
         match self {
@@ -77,7 +77,7 @@ impl<'a> Build<'a> for crate::item::FuncRef<'a> {
     }
 }
 
-impl<'a> Build<'a> for crate::item::TableRef<'a> {
+impl<'a> ToSql<'a> for crate::item::TableRef<'a> {
     #[inline]
     fn build<D: Dialect>(self, sql: &mut String, args: &mut Vec<crate::value::Value<'a>>) {
         match self {
@@ -87,7 +87,7 @@ impl<'a> Build<'a> for crate::item::TableRef<'a> {
     }
 }
 
-impl<'a> Build<'a> for crate::item::FuncCall<'a> {
+impl<'a> ToSql<'a> for crate::item::FuncCall<'a> {
     fn build<D: Dialect>(self, sql: &mut String, args: &mut Vec<crate::value::Value<'a>>) {
         self.0.build::<D>(sql, args);
         sql.push('(');
@@ -96,7 +96,7 @@ impl<'a> Build<'a> for crate::item::FuncCall<'a> {
     }
 }
 
-impl<'a> Build<'a> for crate::item::Row<'a> {
+impl<'a> ToSql<'a> for crate::item::Row<'a> {
     fn build<D: Dialect>(self, sql: &mut String, args: &mut Vec<crate::value::Value<'a>>) {
         sql.push('(');
         join!(D, sql, args, ", ", self.0);
@@ -104,7 +104,7 @@ impl<'a> Build<'a> for crate::item::Row<'a> {
     }
 }
 
-impl<'a> Build<'a> for crate::item::Cte<'a> {
+impl<'a> ToSql<'a> for crate::item::Cte<'a> {
     fn build<D: Dialect>(self, sql: &mut String, args: &mut Vec<crate::value::Value<'a>>) {
         self.name.build::<D>(sql, args);
         if !self.columns.is_empty() {

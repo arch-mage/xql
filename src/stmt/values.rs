@@ -10,13 +10,7 @@ pub struct Values<'a> {
 
 stmt_common!(Values);
 
-impl std::fmt::Display for Values<'_> {
-    #[inline]
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write_option!(with: self, f, with)?;
-        write!(f, "{}", self.rows)
-    }
-}
+crate::macros::gen_display!(Values<'_>);
 
 impl<'a> Values<'a> {
     pub fn limit(self, limit: u32) -> Result<'a> {

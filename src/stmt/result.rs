@@ -10,14 +10,7 @@ pub struct Result<'a> {
 
 stmt_common!(Result);
 
-impl std::fmt::Display for Result<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write_option!(with: self, f, with)?;
-        write!(f, "{}", self.data)?;
-        write_option!(self, f, limit)?;
-        write_option!(self, f, offset)
-    }
-}
+crate::macros::gen_display!(Result<'_>);
 
 impl<'a, T> std::convert::From<T> for Result<'a>
 where

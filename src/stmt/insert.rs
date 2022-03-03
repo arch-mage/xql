@@ -51,13 +51,7 @@ impl<'a> Insert<'a> {
     }
 }
 
-impl std::fmt::Display for Insert<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write_option!(with: self, f, with)?;
-        write!(f, "{} {}", self.table, self.values)?;
-        write_option!(self, f, returns)
-    }
-}
+crate::macros::gen_display!(Insert<'_>);
 
 #[test]
 #[cfg(test)]

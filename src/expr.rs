@@ -18,20 +18,7 @@ pub enum Expr<'a> {
     SubQuery(Data<'a>),
 }
 
-impl std::fmt::Display for Expr<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        match self {
-            Expr::Column(val) => write!(f, "{val}"),
-            Expr::Literal(val) => write!(f, "{val}"),
-            Expr::FuncCall(val) => write!(f, "{val}"),
-            Expr::Infix(left, op, right) => write!(f, "{left} {op} {right}"),
-            Expr::Prefix(op, expr) => write!(f, "{op} {expr}"),
-            Expr::Postfix(expr, op) => write!(f, "{expr} {op}"),
-            Expr::Paren(expr) => write!(f, "({expr})"),
-            Expr::SubQuery(val) => write!(f, "({val})"),
-        }
-    }
-}
+crate::macros::gen_display!(Expr<'_>);
 
 impl<'a> std::convert::From<&'a str> for Expr<'a> {
     #[inline]

@@ -244,6 +244,117 @@ macro_rules! gen_impl_from_tup {
 
 }
 
+macro_rules! gen_display {
+    ($type:ty) => {
+        impl ::std::fmt::Display for $type {
+            fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+                let (sql, ..) =
+                    $crate::build::ToSql::to_sql::<$crate::build::Display>(self.clone());
+                write!(f, "{sql}")
+            }
+        }
+    };
+}
+
+pub(crate) use gen_display;
 pub(crate) use gen_impl_from_arr;
 pub(crate) use gen_impl_from_tup;
 pub(crate) use gen_impl_from_vec;
+
+#[cfg(feature = "postgres")]
+macro_rules! binding_postgres {
+    ($self:expr, $value: expr) => {
+        match $value {
+            Value::Bool(val) => Ok($self.bind(val)),
+            Value::TinyInt(val) => Ok($self.bind(val)),
+            Value::SmallInt(val) => Ok($self.bind(val)),
+            Value::Int(val) => Ok($self.bind(val)),
+            Value::BigInt(val) => Ok($self.bind(val)),
+            Value::TinyUInt(..) => Err(unsupported::<Postgres, u8>()),
+            Value::SmallUInt(..) => Err(unsupported::<Postgres, u16>()),
+            Value::UInt(..) => Err(unsupported::<Postgres, u32>()),
+            Value::BigUInt(..) => Err(unsupported::<Postgres, u64>()),
+            Value::Text(val) => Ok($self.bind(val)),
+            Value::Bytes(val) => Ok($self.bind(val)),
+            Value::Null(Null::Bool(..)) => Ok($self.bind(None::<bool>)),
+            Value::Null(Null::TinyInt(..)) => Ok($self.bind(None::<i8>)),
+            Value::Null(Null::SmallInt(..)) => Ok($self.bind(None::<i16>)),
+            Value::Null(Null::Int(..)) => Ok($self.bind(None::<i32>)),
+            Value::Null(Null::BigInt(..)) => Ok($self.bind(None::<i64>)),
+            Value::Null(Null::TinyUInt(..)) => Err(unsupported::<Postgres, u8>()),
+            Value::Null(Null::SmallUInt(..)) => Err(unsupported::<Postgres, u16>()),
+            Value::Null(Null::UInt(..)) => Err(unsupported::<Postgres, u32>()),
+            Value::Null(Null::BigUInt(..)) => Err(unsupported::<Postgres, u64>()),
+            Value::Null(Null::Text(..)) => Ok($self.bind(None::<&'q str>)),
+            Value::Null(Null::Bytes(..)) => Ok($self.bind(None::<&'q str>)),
+        }
+    };
+}
+#[cfg(feature = "mysql")]
+macro_rules! binding_mysql {
+    ($self:expr, $value: expr) => {
+        match $value {
+            Value::Bool(val) => Ok($self.bind(val)),
+            Value::TinyInt(val) => Ok($self.bind(val)),
+            Value::SmallInt(val) => Ok($self.bind(val)),
+            Value::Int(val) => Ok($self.bind(val)),
+            Value::BigInt(val) => Ok($self.bind(val)),
+            Value::TinyUInt(val) => Ok($self.bind(val)),
+            Value::SmallUInt(val) => Ok($self.bind(val)),
+            Value::UInt(val) => Ok($self.bind(val)),
+            Value::BigUInt(val) => Ok($self.bind(val)),
+            Value::Text(val) => Ok($self.bind(val)),
+            Value::Bytes(val) => Ok($self.bind(val)),
+            Value::Null(Null::Bool(..)) => Ok($self.bind(None::<bool>)),
+            Value::Null(Null::TinyInt(..)) => Ok($self.bind(None::<i8>)),
+            Value::Null(Null::SmallInt(..)) => Ok($self.bind(None::<i16>)),
+            Value::Null(Null::Int(..)) => Ok($self.bind(None::<i32>)),
+            Value::Null(Null::BigInt(..)) => Ok($self.bind(None::<i64>)),
+            Value::Null(Null::TinyUInt(..)) => Ok($self.bind(None::<u8>)),
+            Value::Null(Null::SmallUInt(..)) => Ok($self.bind(None::<u16>)),
+            Value::Null(Null::UInt(..)) => Ok($self.bind(None::<u32>)),
+            Value::Null(Null::BigUInt(..)) => Ok($self.bind(None::<u64>)),
+            Value::Null(Null::Text(..)) => Ok($self.bind(None::<&'q str>)),
+            Value::Null(Null::Bytes(..)) => Ok($self.bind(None::<&'q str>)),
+        }
+    };
+}
+
+#[cfg(feature = "sqlite")]
+macro_rules! binding_sqlite {
+    ($self:expr, $value: expr) => {
+        match $value {
+            Value::Bool(val) => Ok($self.bind(val)),
+            Value::TinyInt(val) => Ok($self.bind(val)),
+            Value::SmallInt(val) => Ok($self.bind(val)),
+            Value::Int(val) => Ok($self.bind(val)),
+            Value::BigInt(val) => Ok($self.bind(val)),
+            Value::TinyUInt(val) => Ok($self.bind(val)),
+            Value::SmallUInt(val) => Ok($self.bind(val)),
+            Value::UInt(val) => Ok($self.bind(val)),
+            Value::BigUInt(..) => Err(unsupported::<Sqlite, u64>()),
+            Value::Text(val) => Ok($self.bind(val)),
+            Value::Bytes(val) => Ok($self.bind(val)),
+            Value::Null(Null::Bool(..)) => Ok($self.bind(None::<bool>)),
+            Value::Null(Null::TinyInt(..)) => Ok($self.bind(None::<i8>)),
+            Value::Null(Null::SmallInt(..)) => Ok($self.bind(None::<i16>)),
+            Value::Null(Null::Int(..)) => Ok($self.bind(None::<i32>)),
+            Value::Null(Null::BigInt(..)) => Ok($self.bind(None::<i64>)),
+            Value::Null(Null::TinyUInt(..)) => Ok($self.bind(None::<u8>)),
+            Value::Null(Null::SmallUInt(..)) => Ok($self.bind(None::<u16>)),
+            Value::Null(Null::UInt(..)) => Ok($self.bind(None::<u32>)),
+            Value::Null(Null::BigUInt(..)) => Err(unsupported::<Sqlite, u64>()),
+            Value::Null(Null::Text(..)) => Ok($self.bind(None::<&'q str>)),
+            Value::Null(Null::Bytes(..)) => Ok($self.bind(None::<&'q str>)),
+        }
+    };
+}
+
+#[cfg(feature = "postgres")]
+pub(crate) use binding_postgres;
+
+#[cfg(feature = "mysql")]
+pub(crate) use binding_mysql;
+
+#[cfg(feature = "sqlite")]
+pub(crate) use binding_sqlite;

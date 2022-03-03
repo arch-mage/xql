@@ -52,26 +52,22 @@ macro_rules! into_borrowed_value {
 pub enum Value<'a> {
     Null(Null<'a>),
     Bool(bool),
+
     TinyInt(i8),
     SmallInt(i16),
     Int(i32),
     BigInt(i64),
+
+    TinyUInt(u8),
+    SmallUInt(u16),
+    UInt(u32),
+    BigUInt(u64),
+
     Text(&'a str),
+    Bytes(&'a [u8]),
 }
 
-impl std::fmt::Display for Value<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        match self {
-            Value::Null(..) => write!(f, "null"),
-            Value::Bool(val) => write!(f, "{val}"),
-            Value::TinyInt(val) => write!(f, "{val}"),
-            Value::SmallInt(val) => write!(f, "{val}"),
-            Value::Int(val) => write!(f, "{val}"),
-            Value::BigInt(val) => write!(f, "{val}"),
-            Value::Text(val) => write!(f, "{}", crate::utils::quote(val, '\'')),
-        }
-    }
-}
+crate::macros::gen_display!(Value<'_>);
 
 /// 👻
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -81,7 +77,12 @@ pub enum Null<'a> {
     SmallInt(PhantomData<i16>),
     Int(PhantomData<i32>),
     BigInt(PhantomData<i64>),
+    TinyUInt(PhantomData<u8>),
+    SmallUInt(PhantomData<u16>),
+    UInt(PhantomData<u32>),
+    BigUInt(PhantomData<u64>),
     Text(PhantomData<&'a str>),
+    Bytes(PhantomData<&'a [u8]>),
 }
 
 into_value!(
@@ -90,8 +91,13 @@ into_value!(
     i16 => SmallInt,
     i32 => Int,
     i64 => BigInt,
+    u8 => TinyUInt,
+    u16 => SmallUInt,
+    u32 => UInt,
+    u64 => BigUInt,
 );
 
 into_borrowed_value!(
     String => Text,
+    Vec<u8> => Bytes,
 );

@@ -13,14 +13,7 @@ pub struct Delete<'a> {
 
 stmt_common!(Delete);
 
-impl std::fmt::Display for Delete<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write_option!(with: self, f, with)?;
-        write!(f, "{}", self.table)?;
-        write_option!(self, f, filter)?;
-        write_option!(self, f, returns)
-    }
-}
+crate::macros::gen_display!(Delete<'_>);
 
 impl<'a> Delete<'a> {
     /// Set condition to `WHERE` clause.

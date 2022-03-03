@@ -1,7 +1,7 @@
-use super::Build;
 use super::Dialect;
+use super::ToSql;
 
-impl<'a> Build<'a> for crate::expr::Expr<'a> {
+impl<'a> ToSql<'a> for crate::expr::Expr<'a> {
     #[inline]
     fn build<D: Dialect>(self, sql: &mut String, args: &mut Vec<crate::value::Value<'a>>) {
         match self {

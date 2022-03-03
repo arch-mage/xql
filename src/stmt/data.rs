@@ -8,15 +8,7 @@ pub enum Data<'a> {
     Binary(crate::stmt::binary::Binary<'a>),
 }
 
-impl std::fmt::Display for Data<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        match self {
-            Data::Select(select) => write!(f, "{select}"),
-            Data::Values(values) => write!(f, "{values}"),
-            Data::Binary(binary) => write!(f, "{binary}"),
-        }
-    }
-}
+crate::macros::gen_display!(Data<'_>);
 
 impl std::default::Default for Data<'_> {
     #[inline]

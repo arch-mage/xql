@@ -1,7 +1,7 @@
-use super::Build;
 use super::Dialect;
+use super::ToSql;
 
-impl<'a> Build<'a> for crate::stmt::Stmt<'a> {
+impl<'a> ToSql<'a> for crate::stmt::Stmt<'a> {
     fn build<D: Dialect>(self, sql: &mut String, args: &mut Vec<crate::value::Value<'a>>) {
         match self {
             crate::stmt::Stmt::Insert(stmt) => stmt.build::<D>(sql, args),
@@ -15,7 +15,7 @@ impl<'a> Build<'a> for crate::stmt::Stmt<'a> {
     }
 }
 
-impl<'a> Build<'a> for crate::stmt::binary::Binary<'a> {
+impl<'a> ToSql<'a> for crate::stmt::binary::Binary<'a> {
     fn build<D: Dialect>(self, sql: &mut String, args: &mut Vec<crate::value::Value<'a>>) {
         if let Some(with) = self.with {
             with.build::<D>(sql, args);
@@ -29,7 +29,7 @@ impl<'a> Build<'a> for crate::stmt::binary::Binary<'a> {
     }
 }
 
-impl<'a> Build<'a> for crate::stmt::select::Select<'a> {
+impl<'a> ToSql<'a> for crate::stmt::select::Select<'a> {
     fn build<D: Dialect>(self, sql: &mut String, args: &mut Vec<crate::value::Value<'a>>) {
         if let Some(with) = self.with {
             with.build::<D>(sql, args);
@@ -52,7 +52,7 @@ impl<'a> Build<'a> for crate::stmt::select::Select<'a> {
     }
 }
 
-impl<'a> Build<'a> for crate::stmt::insert::Insert<'a> {
+impl<'a> ToSql<'a> for crate::stmt::insert::Insert<'a> {
     fn build<D: Dialect>(self, sql: &mut String, args: &mut Vec<crate::value::Value<'a>>) {
         if let Some(with) = self.with {
             with.build::<D>(sql, args);
@@ -68,7 +68,7 @@ impl<'a> Build<'a> for crate::stmt::insert::Insert<'a> {
     }
 }
 
-impl<'a> Build<'a> for crate::stmt::update::Update<'a> {
+impl<'a> ToSql<'a> for crate::stmt::update::Update<'a> {
     fn build<D: Dialect>(self, sql: &mut String, args: &mut Vec<crate::value::Value<'a>>) {
         if let Some(with) = self.with {
             with.build::<D>(sql, args);
@@ -92,7 +92,7 @@ impl<'a> Build<'a> for crate::stmt::update::Update<'a> {
     }
 }
 
-impl<'a> Build<'a> for crate::stmt::delete::Delete<'a> {
+impl<'a> ToSql<'a> for crate::stmt::delete::Delete<'a> {
     fn build<D: Dialect>(self, sql: &mut String, args: &mut Vec<crate::value::Value<'a>>) {
         if let Some(with) = self.with {
             with.build::<D>(sql, args);
@@ -110,7 +110,7 @@ impl<'a> Build<'a> for crate::stmt::delete::Delete<'a> {
     }
 }
 
-impl<'a> Build<'a> for crate::stmt::values::Values<'a> {
+impl<'a> ToSql<'a> for crate::stmt::values::Values<'a> {
     #[inline]
     fn build<D: Dialect>(self, sql: &mut String, args: &mut Vec<crate::value::Value<'a>>) {
         if let Some(with) = self.with {
@@ -121,7 +121,7 @@ impl<'a> Build<'a> for crate::stmt::values::Values<'a> {
     }
 }
 
-impl<'a> Build<'a> for crate::stmt::result::Result<'a> {
+impl<'a> ToSql<'a> for crate::stmt::result::Result<'a> {
     #[inline]
     fn build<D: Dialect>(self, sql: &mut String, args: &mut Vec<crate::value::Value<'a>>) {
         if let Some(with) = self.with {
@@ -130,15 +130,17 @@ impl<'a> Build<'a> for crate::stmt::result::Result<'a> {
         }
         self.data.build::<D>(sql, args);
         if let Some(limit) = self.limit {
+            sql.push(' ');
             limit.build::<D>(sql, args);
         }
         if let Some(offset) = self.offset {
+            sql.push(' ');
             offset.build::<D>(sql, args);
         }
     }
 }
 
-impl<'a> Build<'a> for crate::stmt::data::Data<'a> {
+impl<'a> ToSql<'a> for crate::stmt::data::Data<'a> {
     #[inline]
     fn build<D: Dialect>(self, sql: &mut String, args: &mut Vec<crate::value::Value<'a>>) {
         match self {

@@ -17,17 +17,7 @@ pub struct Select<'a> {
 
 stmt_common!(Select);
 
-impl std::fmt::Display for Select<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write_option!(with: self, f, with)?;
-        write!(f, "{}", self.fields)?;
-        write_option!(self, f, tables)?;
-        write_option!(self, f, filter)?;
-        write_option!(self, f, groups)?;
-        write_option!(self, f, having)?;
-        write_option!(self, f, orders)
-    }
-}
+crate::macros::gen_display!(Select<'_>);
 
 impl<'a> Select<'a> {
     /// Add more column(s) to `SELECT` clause.

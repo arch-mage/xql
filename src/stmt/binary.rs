@@ -14,15 +14,7 @@ pub struct Binary<'a> {
 }
 
 stmt_common!(Binary);
-
-impl std::fmt::Display for Binary<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        if let Some(with) = &self.with {
-            write!(f, "{} ", with)?;
-        }
-        write!(f, "{} {} {}", self.left, self.op, self.right)
-    }
-}
+crate::macros::gen_display!(Binary<'_>);
 
 #[test]
 #[cfg(test)]

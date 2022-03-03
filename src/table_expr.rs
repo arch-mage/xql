@@ -1,9 +1,9 @@
 use crate::expr::Expr;
 use crate::item::FuncCall;
 use crate::item::TableRef;
+use crate::stmt::data::Data;
 use crate::stmt::select::Select;
 use crate::stmt::values::Values;
-use crate::stmt::data::Data;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum TableExpr<'a> {
@@ -22,26 +22,7 @@ pub enum TableExpr<'a> {
     SubQuery(Data<'a>),
 }
 
-impl std::fmt::Display for TableExpr<'_> {
-    #[rustfmt::skip]
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        match self {
-            TableExpr::TableRef(val) => write!(f, "{val}"),
-            TableExpr::FuncCall(val) => write!(f, "{val}"),
-            TableExpr::Join(left, right, cond) => write!(f, "{left} JOIN {right} ON {cond}"),
-            TableExpr::LeftJoin(left, right, cond) => write!(f, "{left} LEFT JOIN {right} ON {cond}"),
-            TableExpr::RightJoin(left, right, cond) => write!(f, "{left} RIGHT JOIN {right} ON {cond}"),
-            TableExpr::FullJoin(left, right, cond) => write!(f, "{left} FULL JOIN {right} ON {cond}"),
-            TableExpr::NaturalJoin(left, right) => write!(f, "{left} NATURAL JOIN {right}"),
-            TableExpr::NaturalLeftJoin(left, right) => write!(f, "{left} NATURAL LEFT JOIN {right}"),
-            TableExpr::NaturalRightJoin(left, right) => write!(f, "{left} NATURAL RIGHT JOIN {right}"),
-            TableExpr::NaturalFullJoin(left, right) => write!(f, "{left} NATURAL FULL JOIN {right}"),
-            TableExpr::CrossJoin(left, right) => write!(f, "{left} CROSS JOIN {right}"),
-            TableExpr::SubQuery(val) => write!(f, "({val})"),
-            
-        }
-    }
-}
+crate::macros::gen_display!(TableExpr<'_>);
 
 impl<'a> std::convert::From<&'a str> for TableExpr<'a> {
     #[inline]
@@ -88,6 +69,8 @@ impl<'a> std::convert::From<Values<'a>> for TableExpr<'a> {
 #[test]
 #[cfg(test)]
 fn test() {
+    use crate::ops::as_field;
+    use crate::ops::as_table;
     use crate::ops::cross_join;
     use crate::ops::eq;
     use crate::ops::full_join;
@@ -98,8 +81,6 @@ fn test() {
     use crate::ops::natural_left_join;
     use crate::ops::natural_right_join;
     use crate::ops::right_join;
-    use crate::ops::as_table;
-    use crate::ops::as_field;
     use crate::stmt::select;
 
     let query = join("a", "b", eq(("a", "id"), ("b", "id")));
@@ -123,6 +104,12 @@ fn test() {
     let query = cross_join("a", "b");
     assert_eq!(query.to_string(), "a CROSS JOIN b");
 
-    let query = select([("sub", "one"), ("sub", "two")]).from(as_table(select([as_field(1, "one"), as_field(2, "two")]), "sub"));
-    assert_eq!(query.to_string(), "SELECT sub.one, sub.two FROM (SELECT 1 AS one, 2 AS two) AS sub");
+    let query = select([("sub", "one"), ("sub", "two")]).from(as_table(
+        select([as_field(1, "one"), as_field(2, "two")]),
+        "sub",
+    ));
+    assert_eq!(
+        query.to_string(),
+        "SELECT sub.one, sub.two FROM (SELECT 1 AS one, 2 AS two) AS sub"
+    );
 }

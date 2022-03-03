@@ -25,15 +25,52 @@ features = ["postgres", "mysql", "sqlite"]
 rustdoc-args = ["--cfg", "docsrs"]
 
 [features]
-postgres = ["xql-sqlx-postgres"]
-mysql = ["xql-sqlx-mysql"]
-sqlite = ["xql-sqlx-sqlite"]
+postgres = ["sqlx", "xql-sqlx-postgres"]
+mysql = ["sqlx", "xql-sqlx-mysql"]
+sqlite = ["sqlx", "xql-sqlx-sqlite"]
 
-[dependencies]
-xql-sqlx-postgres = { version = "0.1.0", path = "postgres", optional = true }
-xql-sqlx-mysql = { version = "0.1.0", path = "mysql", optional = true }
-xql-sqlx-sqlite = { version = "0.1.0", path = "sqlite", optional = true }
+[dependencies.sqlx]
+version = "0.5"
+default-features = false
+features = ["runtime-tokio-rustls"]
+optional = true
 
-[dev-dependencies]
-sqlx = { version = "0.5", default-features = false, features = ["runtime-tokio-rustls", "postgres", "mysql", "sqlite", "macros"] }
-tokio = { version = "1.17", default-features = false, features = ["macros", "rt-multi-thread"] }
+[dependencies.xql-sqlx-postgres]
+path = "postgres"
+version = "0.1.1"
+optional = true
+
+[dependencies.xql-sqlx-mysql]
+path = "mysql"
+version = "0.1.1"
+optional = true
+
+[dependencies.xql-sqlx-sqlite]
+path = "sqlite"
+version = "0.1.1"
+optional = true
+
+[dev-dependencies.sqlx]
+version = "0.5"
+default-features = false
+features = ["runtime-tokio-rustls", "macros", "postgres", "mysql", "sqlite"]
+
+[dev-dependencies.tokio]
+version = "1.17"
+default-features = false
+features = ["rt-multi-thread", "macros"]
+
+[[test]]
+name = "postgres"
+path = "tests/postgres.rs"
+required-features = ["postgres"]
+
+[[test]]
+name = "mysql"
+path = "tests/mysql.rs"
+required-features = ["mysql"]
+
+[[test]]
+name = "sqlite"
+path = "tests/sqlite.rs"
+required-features = ["sqlite"]

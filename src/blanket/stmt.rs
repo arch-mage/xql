@@ -21,6 +21,7 @@ macro_rules! gen_method {
         }
     };
 }
+
 pub trait ResultExt<'a>: Sized + Into<crate::stmt::result::Result<'a>> {
     gen_method!(union);
     gen_method!(union_all);
@@ -31,6 +32,144 @@ pub trait ResultExt<'a>: Sized + Into<crate::stmt::result::Result<'a>> {
 }
 
 impl<'a, T> ResultExt<'a> for T where T: Into<crate::stmt::result::Result<'a>> {}
+
+#[cfg(feature = "sqlx")]
+#[cfg_attr(docsrs, doc(cfg(feature = "sqlx")))]
+pub trait StmtExt<'v>: Sized + Into<crate::stmt::Stmt<'v>> {
+    fn fetch_one<'a, 'c, DB, E>(
+        self,
+        executor: E,
+    ) -> std::pin::Pin<Box<dyn 'a + std::future::Future<Output = Result<DB::Row, sqlx::Error>>>>
+    where
+        Self: 'a,
+        'v: 'a,
+        DB: sqlx::Database + crate::exec::Backend + crate::build::Dialect,
+        E: 'a + sqlx::Executor<'c, Database = DB>,
+    {
+        Box::pin(async move { crate::exec::fetch_one(self, executor).await })
+    }
+
+    #[allow(clippy::type_complexity)]
+    fn fetch_optional<'a, 'c, DB, E>(
+        self,
+        executor: E,
+    ) -> std::pin::Pin<
+        Box<dyn 'a + std::future::Future<Output = Result<Option<DB::Row>, sqlx::Error>>>,
+    >
+    where
+        Self: 'a,
+        'v: 'a,
+        DB: sqlx::Database + crate::exec::Backend + crate::build::Dialect,
+        E: 'a + sqlx::Executor<'c, Database = DB>,
+    {
+        Box::pin(async move { crate::exec::fetch_optional(self, executor).await })
+    }
+
+    #[allow(clippy::type_complexity)]
+    fn fetch_all<'a, 'c, DB, E>(
+        self,
+        executor: E,
+    ) -> std::pin::Pin<Box<dyn 'a + std::future::Future<Output = Result<Vec<DB::Row>, sqlx::Error>>>>
+    where
+        Self: 'a,
+        'v: 'a,
+        DB: sqlx::Database + crate::exec::Backend + crate::build::Dialect,
+        E: 'a + sqlx::Executor<'c, Database = DB>,
+    {
+        Box::pin(async move { crate::exec::fetch_all(self, executor).await })
+    }
+
+    fn fetch_one_as<'a, 'c, E, O>(
+        self,
+        executor: E,
+    ) -> std::pin::Pin<Box<dyn 'a + std::future::Future<Output = Result<O, sqlx::Error>>>>
+    where
+        Self: 'a,
+        'v: 'a,
+        E::Database: sqlx::Database + crate::exec::Backend + crate::build::Dialect,
+        E: 'a + sqlx::Executor<'c>,
+        O: Send + Unpin + for<'r> sqlx::FromRow<'r, <E::Database as sqlx::Database>::Row>,
+    {
+        Box::pin(async move { crate::exec::fetch_one_as(self, executor).await })
+    }
+
+    fn fetch_optional_as<'a, 'c, O, DB, E>(
+        self,
+        executor: E,
+    ) -> std::pin::Pin<Box<dyn 'a + std::future::Future<Output = Result<Option<O>, sqlx::Error>>>>
+    where
+        Self: 'a,
+        'v: 'a,
+        DB: sqlx::Database + crate::exec::Backend + crate::build::Dialect,
+        E: 'a + sqlx::Executor<'c, Database = DB>,
+        O: Send + Unpin + for<'r> sqlx::FromRow<'r, DB::Row>,
+    {
+        Box::pin(async move { crate::exec::fetch_optional_as(self, executor).await })
+    }
+
+    fn fetch_all_as<'a, 'c, O, DB, E>(
+        self,
+        executor: E,
+    ) -> std::pin::Pin<Box<dyn 'a + std::future::Future<Output = Result<Vec<O>, sqlx::Error>>>>
+    where
+        Self: 'a,
+        'v: 'a,
+        DB: sqlx::Database + crate::exec::Backend + crate::build::Dialect,
+        E: 'a + sqlx::Executor<'c, Database = DB>,
+        O: Send + Unpin + for<'r> sqlx::FromRow<'r, DB::Row>,
+    {
+        Box::pin(async move { crate::exec::fetch_all_as(self, executor).await })
+    }
+
+    fn fetch_one_scalar<'a, 'c, E, O>(
+        self,
+        executor: E,
+    ) -> std::pin::Pin<Box<dyn 'a + std::future::Future<Output = Result<O, sqlx::Error>>>>
+    where
+        Self: 'a,
+        'v: 'a,
+        E::Database: sqlx::Database + crate::exec::Backend + crate::build::Dialect,
+        E: 'a + sqlx::Executor<'c>,
+        O: Send + Unpin,
+        (O,): for<'r> sqlx::FromRow<'r, <E::Database as sqlx::Database>::Row>,
+    {
+        Box::pin(async move { crate::exec::fetch_one_scalar(self, executor).await })
+    }
+
+    fn fetch_optional_scalar<'a, 'c, O, DB, E>(
+        self,
+        executor: E,
+    ) -> std::pin::Pin<Box<dyn 'a + std::future::Future<Output = Result<Option<O>, sqlx::Error>>>>
+    where
+        Self: 'a,
+        'v: 'a,
+        DB: sqlx::Database + crate::exec::Backend + crate::build::Dialect,
+        E: 'a + sqlx::Executor<'c, Database = DB>,
+        O: Send + Unpin,
+        (O,): for<'r> sqlx::FromRow<'r, DB::Row>,
+    {
+        Box::pin(async move { crate::exec::fetch_optional_scalar(self, executor).await })
+    }
+
+    fn fetch_all_scalar<'a, 'c, O, DB, E>(
+        self,
+        executor: E,
+    ) -> std::pin::Pin<Box<dyn 'a + std::future::Future<Output = Result<Vec<O>, sqlx::Error>>>>
+    where
+        Self: 'a,
+        'v: 'a,
+        DB: sqlx::Database + crate::exec::Backend + crate::build::Dialect,
+        E: 'a + sqlx::Executor<'c, Database = DB>,
+        O: Send + Unpin,
+        (O,): for<'r> sqlx::FromRow<'r, DB::Row>,
+    {
+        Box::pin(async move { crate::exec::fetch_all_scalar(self, executor).await })
+    }
+}
+
+#[cfg(feature = "sqlx")]
+#[cfg_attr(docsrs, doc(cfg(feature = "sqlx")))]
+impl<'a, T> StmtExt<'a> for T where T: Into<crate::stmt::Stmt<'a>> {}
 
 #[test]
 #[cfg(test)]

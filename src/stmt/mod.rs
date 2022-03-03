@@ -3,23 +3,6 @@ use crate::item::Ident;
 use crate::item::Row;
 use crate::item::TableRef;
 
-macro_rules! write_option {
-    (with: $self:ident, $f:expr, $name:ident) => {
-        if let Some($name) = &$self.$name {
-            write!($f, "{} ", $name)
-        } else {
-            Ok(())
-        }
-    };
-    ($self:ident, $f:expr, $name:ident) => {
-        if let Some($name) = &$self.$name {
-            write!($f, " {}", $name)
-        } else {
-            Ok(())
-        }
-    };
-}
-
 macro_rules! stmt_common {
     ($stmt:ident) => {
         impl<'a> std::convert::From<$stmt<'a>> for $crate::stmt::Stmt<'a> {
@@ -123,19 +106,7 @@ pub enum Stmt<'a> {
     Result(result::Result<'a>),
 }
 
-impl std::fmt::Display for Stmt<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        match self {
-            Stmt::Insert(stmt) => write!(f, "{stmt}"),
-            Stmt::Select(stmt) => write!(f, "{stmt}"),
-            Stmt::Update(stmt) => write!(f, "{stmt}"),
-            Stmt::Delete(stmt) => write!(f, "{stmt}"),
-            Stmt::Values(stmt) => write!(f, "{stmt}"),
-            Stmt::Binary(stmt) => write!(f, "{stmt}"),
-            Stmt::Result(stmt) => write!(f, "{stmt}"),
-        }
-    }
-}
+crate::macros::gen_display!(Stmt<'_>);
 
 /// Construct a `SELECT` statement.
 ///

@@ -16,15 +16,7 @@ pub struct Update<'a> {
 
 stmt_common!(Update);
 
-impl std::fmt::Display for Update<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write_option!(with: self, f, with)?;
-        write!(f, "{} {}", self.table, self.set)?;
-        write_option!(self, f, from)?;
-        write_option!(self, f, filter)?;
-        write_option!(self, f, returns)
-    }
-}
+crate::macros::gen_display!(Update<'_>);
 
 impl<'a> Update<'a> {
     pub fn set<C, V>(mut self, column: C, value: V) -> Update<'a>

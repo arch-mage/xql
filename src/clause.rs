@@ -6,20 +6,11 @@ use crate::item::Order;
 use crate::item::Row;
 use crate::item::Table;
 use crate::item::TableRef;
-use crate::utils::join;
 
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct With<'a>(pub(crate) bool, pub(crate) Vec<Cte<'a>>);
 
-impl std::fmt::Display for With<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        if self.0 {
-            write!(f, "WITH RECURSIVE {}", join(&self.1, ", "))
-        } else {
-            write!(f, "WITH {}", join(&self.1, ", "))
-        }
-    }
-}
+crate::macros::gen_display!(With<'_>);
 
 impl<'a, T> std::convert::From<Vec<T>> for With<'a>
 where
@@ -46,13 +37,7 @@ where
 #[repr(transparent)]
 pub struct Select<'a>(pub(crate) Vec<Field<'a>>);
 
-impl std::fmt::Display for Select<'_> {
-    #[inline]
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "SELECT {}", join(&self.0, ", "))
-    }
-}
-
+crate::macros::gen_display!(Select<'_>);
 crate::macros::gen_impl_from_arr!(Select[Field]<'a>);
 crate::macros::gen_impl_from_vec!(Select[Field]<'a>);
 crate::macros::gen_impl_from_tup!(Select[Field]<'a>);
@@ -61,13 +46,6 @@ crate::macros::gen_impl_from_tup!(Select[Field]<'a>);
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 #[repr(transparent)]
 pub struct From<'a>(pub(crate) Vec<Table<'a>>);
-
-impl std::fmt::Display for From<'_> {
-    #[inline]
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "FROM {}", join(&self.0, ", "))
-    }
-}
 
 impl<'a, T> std::convert::From<T> for From<'a>
 where
@@ -79,6 +57,7 @@ where
     }
 }
 
+crate::macros::gen_display!(From<'_>);
 crate::macros::gen_impl_from_arr!(From[Table]<'a>);
 crate::macros::gen_impl_from_vec!(From[Table]<'a>);
 
@@ -87,11 +66,7 @@ crate::macros::gen_impl_from_vec!(From[Table]<'a>);
 #[repr(transparent)]
 pub struct Where<'a>(pub(crate) Expr<'a>);
 
-impl std::fmt::Display for Where<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "WHERE {}", self.0)
-    }
-}
+crate::macros::gen_display!(Where<'_>);
 
 impl<'a, E> std::convert::From<E> for Where<'a>
 where
@@ -108,12 +83,6 @@ where
 #[repr(transparent)]
 pub struct GroupBy<'a>(pub(crate) Vec<Expr<'a>>);
 
-impl std::fmt::Display for GroupBy<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "GROUP BY {}", join(&self.0, ", "))
-    }
-}
-
 impl<'a, T> std::convert::From<T> for GroupBy<'a>
 where
     T: Into<Expr<'a>>,
@@ -124,6 +93,7 @@ where
     }
 }
 
+crate::macros::gen_display!(GroupBy<'_>);
 crate::macros::gen_impl_from_arr!(GroupBy[Expr]<'a>);
 crate::macros::gen_impl_from_vec!(GroupBy[Expr]<'a>);
 
@@ -132,11 +102,7 @@ crate::macros::gen_impl_from_vec!(GroupBy[Expr]<'a>);
 #[repr(transparent)]
 pub struct Having<'a>(pub(crate) Expr<'a>);
 
-impl std::fmt::Display for Having<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "HAVING {}", self.0)
-    }
-}
+crate::macros::gen_display!(Having<'_>);
 
 impl<'a, E> std::convert::From<E> for Having<'a>
 where
@@ -153,12 +119,6 @@ where
 #[repr(transparent)]
 pub struct OrderBy<'a>(pub(crate) Vec<Order<'a>>);
 
-impl std::fmt::Display for OrderBy<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "ORDER BY {}", join(&self.0, ", "))
-    }
-}
-
 impl<'a, T> std::convert::From<T> for OrderBy<'a>
 where
     T: Into<Order<'a>>,
@@ -169,6 +129,7 @@ where
     }
 }
 
+crate::macros::gen_display!(OrderBy<'_>);
 crate::macros::gen_impl_from_arr!(OrderBy[Order]<'a>);
 crate::macros::gen_impl_from_vec!(OrderBy[Order]<'a>);
 
@@ -176,27 +137,14 @@ crate::macros::gen_impl_from_vec!(OrderBy[Order]<'a>);
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct Insert<'a>(pub(crate) TableRef<'a>, pub(crate) Vec<Ident<'a>>);
 
-impl std::fmt::Display for Insert<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "INSERT INTO {}", self.0)?;
-        if !self.1.is_empty() {
-            write!(f, "({})", join(&self.1, ", "))?;
-        };
-        Ok(())
-    }
-}
+crate::macros::gen_display!(Insert<'_>);
 
 /// Represent a `VALUES` clause.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 #[repr(transparent)]
 pub struct Values<'a>(pub(crate) Vec<Row<'a>>);
 
-impl std::fmt::Display for Values<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "VALUES {}", join(&self.0, ", "))
-    }
-}
-
+crate::macros::gen_display!(Values<'_>);
 crate::macros::gen_impl_from_arr!(Values[Row]<'a>);
 crate::macros::gen_impl_from_vec!(Values[Row]<'a>);
 crate::macros::gen_impl_from_tup!(Values[Row]<'a>);
@@ -206,12 +154,7 @@ crate::macros::gen_impl_from_tup!(Values[Row]<'a>);
 #[repr(transparent)]
 pub struct Returning<'a>(pub(crate) Vec<Field<'a>>);
 
-impl std::fmt::Display for Returning<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "RETURNING {}", join(&self.0, ", "))
-    }
-}
-
+crate::macros::gen_display!(Returning<'_>);
 crate::macros::gen_impl_from_arr!(Returning[Field]<'a>);
 crate::macros::gen_impl_from_vec!(Returning[Field]<'a>);
 crate::macros::gen_impl_from_tup!(Returning[Field]<'a>);
@@ -221,11 +164,7 @@ crate::macros::gen_impl_from_tup!(Returning[Field]<'a>);
 #[repr(transparent)]
 pub struct Delete<'a>(pub(crate) TableRef<'a>);
 
-impl std::fmt::Display for Delete<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "DELETE FROM {}", self.0)
-    }
-}
+crate::macros::gen_display!(Delete<'_>);
 
 impl<'a, T> std::convert::From<T> for Delete<'a>
 where
@@ -242,11 +181,7 @@ where
 #[repr(transparent)]
 pub struct Update<'a>(pub(crate) TableRef<'a>);
 
-impl std::fmt::Display for Update<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "UPDATE {}", self.0)
-    }
-}
+crate::macros::gen_display!(Update<'_>);
 
 impl<'a, T> std::convert::From<T> for Update<'a>
 where
@@ -263,18 +198,7 @@ where
 #[repr(transparent)]
 pub struct Set<'a>(pub(crate) Vec<(Ident<'a>, Expr<'a>)>);
 
-impl std::fmt::Display for Set<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(
-            f,
-            "SET {}",
-            join(
-                self.0.iter().map(|(col, val)| format!("{col} = {val}")),
-                ", "
-            )
-        )
-    }
-}
+crate::macros::gen_display!(Set<'_>);
 
 impl<'a, C, E> std::convert::From<Vec<(C, E)>> for Set<'a>
 where
@@ -309,11 +233,7 @@ where
 #[repr(transparent)]
 pub struct Limit(pub(crate) u32);
 
-impl std::fmt::Display for Limit {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "LIMIT {}", self.0)
-    }
-}
+crate::macros::gen_display!(Limit);
 
 impl std::convert::From<u32> for Limit {
     #[inline]
@@ -327,11 +247,7 @@ impl std::convert::From<u32> for Limit {
 #[repr(transparent)]
 pub struct Offset(pub(crate) u32);
 
-impl std::fmt::Display for Offset {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "OFFSET {}", self.0)
-    }
-}
+crate::macros::gen_display!(Offset);
 
 impl std::convert::From<u32> for Offset {
     #[inline]

@@ -1,15 +1,10 @@
 use crate::expr::Expr;
 use crate::table_expr::TableExpr;
-use crate::utils::join;
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct Ident<'a>(pub(crate) &'a str);
 
-impl std::fmt::Display for Ident<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "{}", crate::utils::quote_pretty(self.0, '"'))
-    }
-}
+crate::macros::gen_display!(Ident<'_>);
 
 impl<'a> std::convert::From<&'a str> for Ident<'a> {
     #[inline]
@@ -26,15 +21,7 @@ pub enum ColumnRef<'a> {
     SchemaTableColumn(Ident<'a>, Ident<'a>, Ident<'a>),
 }
 
-impl std::fmt::Display for ColumnRef<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        match self {
-            ColumnRef::Column(col) => write!(f, "{}", col),
-            ColumnRef::TableColumn(tbl, col) => write!(f, "{}.{}", tbl, col),
-            ColumnRef::SchemaTableColumn(sch, tbl, col) => write!(f, "{}.{}.{}", sch, tbl, col),
-        }
-    }
-}
+crate::macros::gen_display!(ColumnRef<'_>);
 
 impl std::default::Default for ColumnRef<'_> {
     #[inline]
@@ -70,14 +57,7 @@ pub enum TableRef<'a> {
     SchemaTable(Ident<'a>, Ident<'a>),
 }
 
-impl std::fmt::Display for TableRef<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        match self {
-            TableRef::Table(val) => write!(f, "{val}"),
-            TableRef::SchemaTable(sch, tbl) => write!(f, "{sch}.{tbl}"),
-        }
-    }
-}
+crate::macros::gen_display!(TableRef<'_>);
 
 impl<'a> std::convert::From<&'a str> for TableRef<'a> {
     #[inline]
@@ -113,26 +93,12 @@ impl Default for Sort {
     }
 }
 
-impl std::fmt::Display for Sort {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        match self {
-            Sort::Asc => f.write_str("ASC"),
-            Sort::Desc => f.write_str("DESC"),
-        }
-    }
-}
+crate::macros::gen_display!(Sort);
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Order<'a>(pub(crate) Expr<'a>, pub(crate) Option<Sort>);
 
-impl std::fmt::Display for Order<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        match self {
-            Order(ord, None) => write!(f, "{}", ord),
-            Order(ord, Some(sort)) => write!(f, "{} {}", ord, sort),
-        }
-    }
-}
+crate::macros::gen_display!(Order<'_>);
 
 impl<'a, E> std::convert::From<(E, Sort)> for Order<'a>
 where
@@ -167,11 +133,7 @@ where
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct FuncCall<'a>(pub(crate) FuncRef<'a>, pub(crate) Vec<Expr<'a>>);
 
-impl std::fmt::Display for FuncCall<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "{}({})", self.0, join(&self.1, ", "))
-    }
-}
+crate::macros::gen_display!(FuncCall<'_>);
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum FuncRef<'a> {
@@ -179,14 +141,7 @@ pub enum FuncRef<'a> {
     SchemaFunc(Ident<'a>, Ident<'a>),
 }
 
-impl std::fmt::Display for FuncRef<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        match self {
-            FuncRef::Func(val) => write!(f, "{val}"),
-            FuncRef::SchemaFunc(sch, func) => write!(f, "{sch}.{func}"),
-        }
-    }
-}
+crate::macros::gen_display!(FuncRef<'_>);
 
 impl std::default::Default for FuncRef<'_> {
     #[inline]
@@ -215,15 +170,7 @@ pub struct Field<'a> {
     pub alias: Option<Ident<'a>>,
 }
 
-impl std::fmt::Display for Field<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "{}", self.expr)?;
-        if let Some(alias) = &self.alias {
-            write!(f, " AS {alias}")?;
-        }
-        Ok(())
-    }
-}
+crate::macros::gen_display!(Field<'_>);
 
 impl<'a, E> std::convert::From<E> for Field<'a>
 where
@@ -244,15 +191,7 @@ pub struct Table<'a> {
     pub alias: Option<Ident<'a>>,
 }
 
-impl std::fmt::Display for Table<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "{}", self.table)?;
-        if let Some(alias) = &self.alias {
-            write!(f, " AS {alias}")?;
-        }
-        Ok(())
-    }
-}
+crate::macros::gen_display!(Table<'_>);
 
 impl<'a, T> std::convert::From<T> for Table<'a>
 where
@@ -271,12 +210,7 @@ where
 #[repr(transparent)]
 pub struct Row<'a>(pub(crate) Vec<Expr<'a>>);
 
-impl std::fmt::Display for Row<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "({})", join(&self.0, ", "))
-    }
-}
-
+crate::macros::gen_display!(Row<'_>);
 crate::macros::gen_impl_from_arr!(Row[Expr]<'a>);
 crate::macros::gen_impl_from_vec!(Row[Expr]<'a>);
 crate::macros::gen_impl_from_tup!(Row[Expr]<'a>);
@@ -288,12 +222,4 @@ pub struct Cte<'a> {
     pub(crate) stmt: crate::stmt::Stmt<'a>,
 }
 
-impl std::fmt::Display for Cte<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "{}", self.name)?;
-        if !self.columns.is_empty() {
-            write!(f, "({})", join(&self.columns, ", "))?;
-        }
-        write!(f, " AS ({})", self.stmt)
-    }
-}
+crate::macros::gen_display!(Cte<'_>);
