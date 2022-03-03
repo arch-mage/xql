@@ -144,6 +144,7 @@ impl<'a> Build<'a> for crate::stmt::data::Data<'a> {
         match self {
             crate::stmt::data::Data::Select(stmt) => stmt.build::<D>(sql, args),
             crate::stmt::data::Data::Values(stmt) => stmt.build::<D>(sql, args),
+            crate::stmt::data::Data::Binary(stmt) => stmt.build::<D>(sql, args),
         }
     }
 }

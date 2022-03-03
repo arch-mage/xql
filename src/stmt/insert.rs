@@ -19,11 +19,11 @@ impl<'a> Insert<'a> {
         I: IntoIterator<Item = R>,
     {
         self.values = match self.values {
-            crate::stmt::data::Data::Select(..) => unreachable!(),
             crate::stmt::data::Data::Values(mut inner) => {
                 inner.rows.0.extend(values.into_iter().map(Into::into));
                 crate::stmt::data::Data::Values(inner)
             }
+            _ => unreachable!(),
         };
         self
     }
