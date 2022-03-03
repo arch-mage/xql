@@ -11,4 +11,4 @@ documentation = "https://docs.rs/xql"
 [dependencies.sqlx]
 version = "0.5"
 default-features = false
-features = ["postgres"]
+features = ["runtime-tokio-rustls", "postgres"]
