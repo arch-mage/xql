@@ -8,7 +8,7 @@ members = [
 
 [package]
 name = "xql"
-version = "0.1.3"
+version = "0.2.0"
 readme = "README.md"
 edition = "2021"
 description = "SQL query builder"
