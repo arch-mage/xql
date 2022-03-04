@@ -35,11 +35,13 @@ impl<'a, T> ResultExt<'a> for T where T: Into<crate::stmt::result::Result<'a>> {
 
 #[cfg(feature = "sqlx")]
 #[cfg_attr(docsrs, doc(cfg(feature = "sqlx")))]
-pub trait StmtExt<'v>: Sized + Into<crate::stmt::Stmt<'v>> {
+pub trait StmtExt<'v>: Send + Sized + Into<crate::stmt::Stmt<'v>> {
     fn fetch_one<'a, 'c, DB, E>(
         self,
         executor: E,
-    ) -> std::pin::Pin<Box<dyn 'a + std::future::Future<Output = Result<DB::Row, sqlx::Error>>>>
+    ) -> std::pin::Pin<
+        Box<dyn 'a + std::future::Future<Output = Result<DB::Row, sqlx::Error>> + Send>,
+    >
     where
         Self: 'a,
         'v: 'a,
@@ -69,7 +71,9 @@ pub trait StmtExt<'v>: Sized + Into<crate::stmt::Stmt<'v>> {
     fn fetch_all<'a, 'c, DB, E>(
         self,
         executor: E,
-    ) -> std::pin::Pin<Box<dyn 'a + std::future::Future<Output = Result<Vec<DB::Row>, sqlx::Error>>>>
+    ) -> std::pin::Pin<
+        Box<dyn 'a + std::future::Future<Output = Result<Vec<DB::Row>, sqlx::Error>> + Send>,
+    >
     where
         Self: 'a,
         'v: 'a,
@@ -82,7 +86,7 @@ pub trait StmtExt<'v>: Sized + Into<crate::stmt::Stmt<'v>> {
     fn fetch_one_as<'a, 'c, E, O>(
         self,
         executor: E,
-    ) -> std::pin::Pin<Box<dyn 'a + std::future::Future<Output = Result<O, sqlx::Error>>>>
+    ) -> std::pin::Pin<Box<dyn 'a + std::future::Future<Output = Result<O, sqlx::Error>> + Send>>
     where
         Self: 'a,
         'v: 'a,
@@ -96,7 +100,9 @@ pub trait StmtExt<'v>: Sized + Into<crate::stmt::Stmt<'v>> {
     fn fetch_optional_as<'a, 'c, O, DB, E>(
         self,
         executor: E,
-    ) -> std::pin::Pin<Box<dyn 'a + std::future::Future<Output = Result<Option<O>, sqlx::Error>>>>
+    ) -> std::pin::Pin<
+        Box<dyn 'a + std::future::Future<Output = Result<Option<O>, sqlx::Error>> + Send>,
+    >
     where
         Self: 'a,
         'v: 'a,
@@ -110,7 +116,7 @@ pub trait StmtExt<'v>: Sized + Into<crate::stmt::Stmt<'v>> {
     fn fetch_all_as<'a, 'c, O, DB, E>(
         self,
         executor: E,
-    ) -> std::pin::Pin<Box<dyn 'a + std::future::Future<Output = Result<Vec<O>, sqlx::Error>>>>
+    ) -> std::pin::Pin<Box<dyn 'a + std::future::Future<Output = Result<Vec<O>, sqlx::Error>> + Send>>
     where
         Self: 'a,
         'v: 'a,
@@ -124,7 +130,7 @@ pub trait StmtExt<'v>: Sized + Into<crate::stmt::Stmt<'v>> {
     fn fetch_one_scalar<'a, 'c, E, O>(
         self,
         executor: E,
-    ) -> std::pin::Pin<Box<dyn 'a + std::future::Future<Output = Result<O, sqlx::Error>>>>
+    ) -> std::pin::Pin<Box<dyn 'a + std::future::Future<Output = Result<O, sqlx::Error>> + Send>>
     where
         Self: 'a,
         'v: 'a,
@@ -139,7 +145,9 @@ pub trait StmtExt<'v>: Sized + Into<crate::stmt::Stmt<'v>> {
     fn fetch_optional_scalar<'a, 'c, O, DB, E>(
         self,
         executor: E,
-    ) -> std::pin::Pin<Box<dyn 'a + std::future::Future<Output = Result<Option<O>, sqlx::Error>>>>
+    ) -> std::pin::Pin<
+        Box<dyn 'a + std::future::Future<Output = Result<Option<O>, sqlx::Error>> + Send>,
+    >
     where
         Self: 'a,
         'v: 'a,
@@ -154,7 +162,7 @@ pub trait StmtExt<'v>: Sized + Into<crate::stmt::Stmt<'v>> {
     fn fetch_all_scalar<'a, 'c, O, DB, E>(
         self,
         executor: E,
-    ) -> std::pin::Pin<Box<dyn 'a + std::future::Future<Output = Result<Vec<O>, sqlx::Error>>>>
+    ) -> std::pin::Pin<Box<dyn 'a + std::future::Future<Output = Result<Vec<O>, sqlx::Error>> + Send>>
     where
         Self: 'a,
         'v: 'a,
@@ -169,7 +177,7 @@ pub trait StmtExt<'v>: Sized + Into<crate::stmt::Stmt<'v>> {
 
 #[cfg(feature = "sqlx")]
 #[cfg_attr(docsrs, doc(cfg(feature = "sqlx")))]
-impl<'a, T> StmtExt<'a> for T where T: Into<crate::stmt::Stmt<'a>> {}
+impl<'a, T> StmtExt<'a> for T where T: Send + Into<crate::stmt::Stmt<'a>> {}
 
 #[test]
 #[cfg(test)]
