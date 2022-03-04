@@ -20,22 +20,16 @@ The CRUD (or ISUD with sql acronym) will be look like this:
 1. `INSERT` statement.
 
 ```rust
-let values = [
-    (
-        1_i32,
-        &"The Fellowship of the Rings".to_string(),
-        1954_i16,
-        &"J. R. R. Tolkien".to_string(),
-    ),
-    (
-        2_i32,
-        &"Dune".to_string(),
-        1965_i16,
-        &"Frank Herbret".to_string()
-    ),
-];
+let book1 = "The Fellowship of the Rings".to_string();
+let auth1 = "J. R. R. Tolkien".to_string();
+let book2 = "Dune".to_string();
+let auth2 = "Frank Herbret".to_string();
+
 let insert = xql::insert("book", ["id", "title", "year", "author"])
-    .values(values)
+    .values([
+        (1_i32, &book1, 1954_i16, &auth1),
+        (2_i32, &book2, 1965_i16, &auth2),
+    ])
     .returning(["id"]);
 
 assert_eq!(
@@ -50,11 +44,14 @@ assert_eq!(
 2. `SELECT` statement.
 
 ```rust
+use xql::blanket::ExprExt;
+use xql::ops::or;
+
 let select = xql::select(["id", "title"])
     .from("book")
-    .filter(xql::or(
-        xql::eq("id", 1),
-        xql::eq("id", 2),
+    .filter(or(
+        "id".equal(1),
+        "id".equal(2),
     ))
     .order_by(xql::desc("year"));
 
@@ -102,32 +99,50 @@ assert_eq!(
 
 To execute those queries, add [sqlx][sqlx] to dependencies and enable the backend.
 
-```rust no_run
+```rust
 #[cfg(all(feature = "postgres", not(feature = "mysql"), not(feature = "sqlite")))]
-async fn execute(pool: sqlx::Pool<sqlx::Postgres>) -> Result<(), sqlx::Error> {
-    xql::postgres::fetch_all(pool, insert).await?;
-    xql::postgres::fetch_all(pool, select).await?;
-    xql::postgres::fetch_all(pool, update).await?;
-    xql::postgres::fetch_all(pool, delete).await?;
-    Ok(());
+async fn execute<'a>(
+    pool: sqlx::Pool<sqlx::Postgres>,
+    insert: xql::stmt::insert::Insert<'a>,
+    select: xql::stmt::select::Select<'a>,
+    update: xql::stmt::update::Update<'a>,
+    delete: xql::stmt::delete::Delete<'a>,
+) -> Result<(), sqlx::Error> {
+    xql::exec::fetch_all(insert, &pool).await?;
+    xql::exec::fetch_all(select, &pool).await?;
+    xql::exec::fetch_all(update, &pool).await?;
+    xql::exec::fetch_all(delete, &pool).await?;
+    Ok(())
 }
 
 #[cfg(all(not(feature = "postgres"), feature = "mysql", not(feature = "sqlite")))]
-async fn execute(pool: sqlx::Pool<sqlx::Mysql>) -> Result<(), sqlx::Error> {
-    xql::mysql::fetch_all(pool, insert).await?;
-    xql::mysql::fetch_all(pool, select).await?;
-    xql::mysql::fetch_all(pool, update).await?;
-    xql::mysql::fetch_all(pool, delete).await?;
-    Ok(());
+async fn execute<'a>(
+    pool: sqlx::Pool<sqlx::MySql>,
+    insert: xql::stmt::insert::Insert<'a>,
+    select: xql::stmt::select::Select<'a>,
+    update: xql::stmt::update::Update<'a>,
+    delete: xql::stmt::delete::Delete<'a>,
+) -> Result<(), sqlx::Error> {
+    xql::exec::fetch_all(insert, &pool).await?;
+    xql::exec::fetch_all(select, &pool).await?;
+    xql::exec::fetch_all(update, &pool).await?;
+    xql::exec::fetch_all(delete, &pool).await?;
+    Ok(())
 }
 
 #[cfg(all(not(feature = "postgres"), not(feature = "mysql"), feature = "sqlite"))]
-async fn execute(pool: sqlx::Pool<sqlx::Sqlite>) -> Result<(), sqlx::Error> {
-    xql::sqlite::fetch_all(pool, insert).await?;
-    xql::sqlite::fetch_all(pool, select).await?;
-    xql::sqlite::fetch_all(pool, update).await?;
-    xql::sqlite::fetch_all(pool, delete).await?;
-    Ok(());
+async fn execute<'a>(
+    pool: sqlx::Pool<sqlx::Sqlite>,
+    insert: xql::stmt::insert::Insert<'a>,
+    select: xql::stmt::select::Select<'a>,
+    update: xql::stmt::update::Update<'a>,
+    delete: xql::stmt::delete::Delete<'a>,
+) -> Result<(), sqlx::Error> {
+    xql::exec::fetch_all(insert, &pool).await?;
+    xql::exec::fetch_all(select, &pool).await?;
+    xql::exec::fetch_all(update, &pool).await?;
+    xql::exec::fetch_all(delete, &pool).await?;
+    Ok(())
 }
 ```
 
