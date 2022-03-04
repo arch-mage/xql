@@ -95,13 +95,7 @@ fn unsupported<DB, T>() -> sqlx::Error {
 
 #[cfg(feature = "sqlx")]
 #[cfg_attr(docsrs, doc(cfg(feature = "sqlx")))]
-pub trait Bind<'q>: Sized {
-    fn bind(self, value: Value<'q>) -> Result<Self, sqlx::Error>;
-}
-
-#[cfg(feature = "sqlx")]
-#[cfg_attr(docsrs, doc(cfg(feature = "sqlx")))]
-pub trait Backend: Database {
+pub trait Bind: Database {
     fn bind_query<'q>(
         query: Query<'q, Self, <Self as HasArguments<'q>>::Arguments>,
         value: Value<'q>,
@@ -116,7 +110,11 @@ pub trait Backend: Database {
         query: QueryScalar<'q, Self, O, <Self as HasArguments<'q>>::Arguments>,
         value: Value<'q>,
     ) -> Result<QueryScalar<'q, Self, O, <Self as HasArguments<'q>>::Arguments>, sqlx::Error>;
+}
 
+#[cfg(feature = "sqlx")]
+#[cfg_attr(docsrs, doc(cfg(feature = "sqlx")))]
+pub trait Backend: Database + Bind {
     fn fetch_one<'a, 'v: 'a, 'c, E>(
         executor: E,
         query: String,
@@ -387,23 +385,38 @@ macro_rules! gen_binds {
 
 #[cfg(feature = "postgres")]
 #[cfg_attr(docsrs, doc(cfg(feature = "postgres")))]
+impl Bind for Postgres {
+    gen_binds!(binding_postgres);
+}
+
+#[cfg(feature = "postgres")]
+#[cfg_attr(docsrs, doc(cfg(feature = "postgres")))]
 impl Backend for Postgres {
     gen_methods!();
-    gen_binds!(binding_postgres);
+}
+
+#[cfg(feature = "mysql")]
+#[cfg_attr(docsrs, doc(cfg(feature = "mysql")))]
+impl Bind for MySql {
+    gen_binds!(binding_mysql);
 }
 
 #[cfg(feature = "mysql")]
 #[cfg_attr(docsrs, doc(cfg(feature = "mysql")))]
 impl Backend for MySql {
     gen_methods!();
-    gen_binds!(binding_mysql);
+}
+
+#[cfg(feature = "sqlite")]
+#[cfg_attr(docsrs, doc(cfg(feature = "sqlite")))]
+impl Bind for Sqlite {
+    gen_binds!(binding_sqlite);
 }
 
 #[cfg(feature = "sqlite")]
 #[cfg_attr(docsrs, doc(cfg(feature = "sqlite")))]
 impl Backend for Sqlite {
     gen_methods!();
-    gen_binds!(binding_sqlite);
 }
 
 #[cfg(feature = "sqlx")]
