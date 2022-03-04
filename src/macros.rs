@@ -270,23 +270,29 @@ macro_rules! binding_postgres {
             Value::SmallInt(val) => Ok($self.bind(val)),
             Value::Int(val) => Ok($self.bind(val)),
             Value::BigInt(val) => Ok($self.bind(val)),
-            Value::TinyUInt(..) => Err(unsupported::<Postgres, u8>()),
-            Value::SmallUInt(..) => Err(unsupported::<Postgres, u16>()),
-            Value::UInt(..) => Err(unsupported::<Postgres, u32>()),
-            Value::BigUInt(..) => Err(unsupported::<Postgres, u64>()),
+            Value::TinyUInt(..) => Err(unsupported::<sqlx::Postgres, u8>()),
+            Value::SmallUInt(..) => Err(unsupported::<sqlx::Postgres, u16>()),
+            Value::UInt(..) => Err(unsupported::<sqlx::Postgres, u32>()),
+            Value::BigUInt(..) => Err(unsupported::<sqlx::Postgres, u64>()),
             Value::Text(val) => Ok($self.bind(val)),
             Value::Bytes(val) => Ok($self.bind(val)),
-            Value::Null(Null::Bool(..)) => Ok($self.bind(None::<bool>)),
-            Value::Null(Null::TinyInt(..)) => Ok($self.bind(None::<i8>)),
-            Value::Null(Null::SmallInt(..)) => Ok($self.bind(None::<i16>)),
-            Value::Null(Null::Int(..)) => Ok($self.bind(None::<i32>)),
-            Value::Null(Null::BigInt(..)) => Ok($self.bind(None::<i64>)),
-            Value::Null(Null::TinyUInt(..)) => Err(unsupported::<Postgres, u8>()),
-            Value::Null(Null::SmallUInt(..)) => Err(unsupported::<Postgres, u16>()),
-            Value::Null(Null::UInt(..)) => Err(unsupported::<Postgres, u32>()),
-            Value::Null(Null::BigUInt(..)) => Err(unsupported::<Postgres, u64>()),
-            Value::Null(Null::Text(..)) => Ok($self.bind(None::<&'q str>)),
-            Value::Null(Null::Bytes(..)) => Ok($self.bind(None::<&'q str>)),
+            Value::Null($crate::value::Null::Bool(..)) => Ok($self.bind(None::<bool>)),
+            Value::Null($crate::value::Null::TinyInt(..)) => Ok($self.bind(None::<i8>)),
+            Value::Null($crate::value::Null::SmallInt(..)) => Ok($self.bind(None::<i16>)),
+            Value::Null($crate::value::Null::Int(..)) => Ok($self.bind(None::<i32>)),
+            Value::Null($crate::value::Null::BigInt(..)) => Ok($self.bind(None::<i64>)),
+            Value::Null($crate::value::Null::TinyUInt(..)) => {
+                Err(unsupported::<sqlx::Postgres, u8>())
+            }
+            Value::Null($crate::value::Null::SmallUInt(..)) => {
+                Err(unsupported::<sqlx::Postgres, u16>())
+            }
+            Value::Null($crate::value::Null::UInt(..)) => Err(unsupported::<sqlx::Postgres, u32>()),
+            Value::Null($crate::value::Null::BigUInt(..)) => {
+                Err(unsupported::<sqlx::Postgres, u64>())
+            }
+            Value::Null($crate::value::Null::Text(..)) => Ok($self.bind(None::<&'q str>)),
+            Value::Null($crate::value::Null::Bytes(..)) => Ok($self.bind(None::<&'q str>)),
         }
     };
 }
@@ -305,17 +311,17 @@ macro_rules! binding_mysql {
             Value::BigUInt(val) => Ok($self.bind(val)),
             Value::Text(val) => Ok($self.bind(val)),
             Value::Bytes(val) => Ok($self.bind(val)),
-            Value::Null(Null::Bool(..)) => Ok($self.bind(None::<bool>)),
-            Value::Null(Null::TinyInt(..)) => Ok($self.bind(None::<i8>)),
-            Value::Null(Null::SmallInt(..)) => Ok($self.bind(None::<i16>)),
-            Value::Null(Null::Int(..)) => Ok($self.bind(None::<i32>)),
-            Value::Null(Null::BigInt(..)) => Ok($self.bind(None::<i64>)),
-            Value::Null(Null::TinyUInt(..)) => Ok($self.bind(None::<u8>)),
-            Value::Null(Null::SmallUInt(..)) => Ok($self.bind(None::<u16>)),
-            Value::Null(Null::UInt(..)) => Ok($self.bind(None::<u32>)),
-            Value::Null(Null::BigUInt(..)) => Ok($self.bind(None::<u64>)),
-            Value::Null(Null::Text(..)) => Ok($self.bind(None::<&'q str>)),
-            Value::Null(Null::Bytes(..)) => Ok($self.bind(None::<&'q str>)),
+            Value::Null($crate::value::Null::Bool(..)) => Ok($self.bind(None::<bool>)),
+            Value::Null($crate::value::Null::TinyInt(..)) => Ok($self.bind(None::<i8>)),
+            Value::Null($crate::value::Null::SmallInt(..)) => Ok($self.bind(None::<i16>)),
+            Value::Null($crate::value::Null::Int(..)) => Ok($self.bind(None::<i32>)),
+            Value::Null($crate::value::Null::BigInt(..)) => Ok($self.bind(None::<i64>)),
+            Value::Null($crate::value::Null::TinyUInt(..)) => Ok($self.bind(None::<u8>)),
+            Value::Null($crate::value::Null::SmallUInt(..)) => Ok($self.bind(None::<u16>)),
+            Value::Null($crate::value::Null::UInt(..)) => Ok($self.bind(None::<u32>)),
+            Value::Null($crate::value::Null::BigUInt(..)) => Ok($self.bind(None::<u64>)),
+            Value::Null($crate::value::Null::Text(..)) => Ok($self.bind(None::<&'q str>)),
+            Value::Null($crate::value::Null::Bytes(..)) => Ok($self.bind(None::<&'q str>)),
         }
     };
 }
@@ -332,20 +338,22 @@ macro_rules! binding_sqlite {
             Value::TinyUInt(val) => Ok($self.bind(val)),
             Value::SmallUInt(val) => Ok($self.bind(val)),
             Value::UInt(val) => Ok($self.bind(val)),
-            Value::BigUInt(..) => Err(unsupported::<Sqlite, u64>()),
+            Value::BigUInt(..) => Err(unsupported::<sqlx::Sqlite, u64>()),
             Value::Text(val) => Ok($self.bind(val)),
             Value::Bytes(val) => Ok($self.bind(val)),
-            Value::Null(Null::Bool(..)) => Ok($self.bind(None::<bool>)),
-            Value::Null(Null::TinyInt(..)) => Ok($self.bind(None::<i8>)),
-            Value::Null(Null::SmallInt(..)) => Ok($self.bind(None::<i16>)),
-            Value::Null(Null::Int(..)) => Ok($self.bind(None::<i32>)),
-            Value::Null(Null::BigInt(..)) => Ok($self.bind(None::<i64>)),
-            Value::Null(Null::TinyUInt(..)) => Ok($self.bind(None::<u8>)),
-            Value::Null(Null::SmallUInt(..)) => Ok($self.bind(None::<u16>)),
-            Value::Null(Null::UInt(..)) => Ok($self.bind(None::<u32>)),
-            Value::Null(Null::BigUInt(..)) => Err(unsupported::<Sqlite, u64>()),
-            Value::Null(Null::Text(..)) => Ok($self.bind(None::<&'q str>)),
-            Value::Null(Null::Bytes(..)) => Ok($self.bind(None::<&'q str>)),
+            Value::Null($crate::value::Null::Bool(..)) => Ok($self.bind(None::<bool>)),
+            Value::Null($crate::value::Null::TinyInt(..)) => Ok($self.bind(None::<i8>)),
+            Value::Null($crate::value::Null::SmallInt(..)) => Ok($self.bind(None::<i16>)),
+            Value::Null($crate::value::Null::Int(..)) => Ok($self.bind(None::<i32>)),
+            Value::Null($crate::value::Null::BigInt(..)) => Ok($self.bind(None::<i64>)),
+            Value::Null($crate::value::Null::TinyUInt(..)) => Ok($self.bind(None::<u8>)),
+            Value::Null($crate::value::Null::SmallUInt(..)) => Ok($self.bind(None::<u16>)),
+            Value::Null($crate::value::Null::UInt(..)) => Ok($self.bind(None::<u32>)),
+            Value::Null($crate::value::Null::BigUInt(..)) => {
+                Err(unsupported::<sqlx::Sqlite, u64>())
+            }
+            Value::Null($crate::value::Null::Text(..)) => Ok($self.bind(None::<&'q str>)),
+            Value::Null($crate::value::Null::Bytes(..)) => Ok($self.bind(None::<&'q str>)),
         }
     };
 }

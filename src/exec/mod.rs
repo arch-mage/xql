@@ -2,10 +2,7 @@
 use std::{future::Future, pin::Pin};
 
 #[cfg(feature = "sqlx")]
-use sqlx::{
-    database::HasArguments, query::Query, query::QueryAs, query::QueryScalar, Database, Executor,
-    FromRow,
-};
+use sqlx::{Database, Executor, FromRow};
 
 #[cfg(feature = "mysql")]
 use sqlx::MySql;
@@ -15,10 +12,9 @@ use sqlx::Postgres;
 use sqlx::Sqlite;
 
 #[cfg(feature = "sqlx")]
-use crate::{build::Dialect, build::ToSql, stmt::Stmt, value::Value};
+use crate::{build::Dialect, build::ToSql, exec::bind::Bind, stmt::Stmt, value::Value};
 
-#[cfg(any(feature = "postgres", feature = "mysql", feature = "sqlite"))]
-use crate::value::Null;
+pub mod bind;
 
 #[cfg(any(feature = "postgres", feature = "mysql", feature = "sqlite"))]
 fn quote(buff: &mut String, val: &str, q: char) {
@@ -79,37 +75,6 @@ impl Dialect for Sqlite {
         buff.push('?');
         val
     }
-}
-
-#[cfg(any(feature = "postgres", feature = "sqlite"))]
-fn unsupported<DB, T>() -> sqlx::Error {
-    sqlx::Error::Io(std::io::Error::new(
-        std::io::ErrorKind::Other,
-        format!(
-            "sqlx::encode::Encode<'_, {}> is not implemented for {}",
-            std::any::type_name::<T>(),
-            std::any::type_name::<DB>(),
-        ),
-    ))
-}
-
-#[cfg(feature = "sqlx")]
-#[cfg_attr(docsrs, doc(cfg(feature = "sqlx")))]
-pub trait Bind: Database {
-    fn bind_query<'q>(
-        query: Query<'q, Self, <Self as HasArguments<'q>>::Arguments>,
-        value: Value<'q>,
-    ) -> Result<Query<'q, Self, <Self as HasArguments<'q>>::Arguments>, sqlx::Error>;
-
-    fn bind_query_as<'q, O>(
-        query: QueryAs<'q, Self, O, <Self as HasArguments<'q>>::Arguments>,
-        value: Value<'q>,
-    ) -> Result<QueryAs<'q, Self, O, <Self as HasArguments<'q>>::Arguments>, sqlx::Error>;
-
-    fn bind_query_scalar<'q, O>(
-        query: QueryScalar<'q, Self, O, <Self as HasArguments<'q>>::Arguments>,
-        value: Value<'q>,
-    ) -> Result<QueryScalar<'q, Self, O, <Self as HasArguments<'q>>::Arguments>, sqlx::Error>;
 }
 
 #[cfg(feature = "sqlx")]
@@ -357,38 +322,6 @@ macro_rules! gen_methods {
     };
 }
 
-#[cfg(any(feature = "postgres", feature = "mysql", feature = "sqlite"))]
-macro_rules! gen_binds {
-    ($macro:ident) => {
-        fn bind_query<'q>(
-            query: Query<'q, Self, <Self as HasArguments<'q>>::Arguments>,
-            value: Value<'q>,
-        ) -> Result<Query<'q, Self, <Self as HasArguments<'q>>::Arguments>, sqlx::Error> {
-            $crate::macros::$macro!(query, value)
-        }
-
-        fn bind_query_as<'q, O>(
-            query: QueryAs<'q, Self, O, <Self as HasArguments<'q>>::Arguments>,
-            value: Value<'q>,
-        ) -> Result<QueryAs<'q, Self, O, <Self as HasArguments<'q>>::Arguments>, sqlx::Error> {
-            $crate::macros::$macro!(query, value)
-        }
-
-        fn bind_query_scalar<'q, O>(
-            query: QueryScalar<'q, Self, O, <Self as HasArguments<'q>>::Arguments>,
-            value: Value<'q>,
-        ) -> Result<QueryScalar<'q, Self, O, <Self as HasArguments<'q>>::Arguments>, sqlx::Error> {
-            $crate::macros::$macro!(query, value)
-        }
-    };
-}
-
-#[cfg(feature = "postgres")]
-#[cfg_attr(docsrs, doc(cfg(feature = "postgres")))]
-impl Bind for Postgres {
-    gen_binds!(binding_postgres);
-}
-
 #[cfg(feature = "postgres")]
 #[cfg_attr(docsrs, doc(cfg(feature = "postgres")))]
 impl Backend for Postgres {
@@ -397,20 +330,8 @@ impl Backend for Postgres {
 
 #[cfg(feature = "mysql")]
 #[cfg_attr(docsrs, doc(cfg(feature = "mysql")))]
-impl Bind for MySql {
-    gen_binds!(binding_mysql);
-}
-
-#[cfg(feature = "mysql")]
-#[cfg_attr(docsrs, doc(cfg(feature = "mysql")))]
 impl Backend for MySql {
     gen_methods!();
-}
-
-#[cfg(feature = "sqlite")]
-#[cfg_attr(docsrs, doc(cfg(feature = "sqlite")))]
-impl Bind for Sqlite {
-    gen_binds!(binding_sqlite);
 }
 
 #[cfg(feature = "sqlite")]
