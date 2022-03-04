@@ -157,6 +157,12 @@ impl Bind for sqlx::Postgres {
             }
             Value::Null(crate::value::Null::Text(..)) => Ok(query.bind(None::<&'q str>)),
             Value::Null(crate::value::Null::Bytes(..)) => Ok(query.bind(None::<&'q str>)),
+            #[cfg(feature = "use-chrono")]
+            Value::DateTime(val) => Ok(query.bind(val)),
+            #[cfg(feature = "use-chrono")]
+            Value::Null(crate::value::Null::DateTime(..)) => {
+                Ok(query.bind(None::<chrono::DateTime<chrono::Utc>>))
+            }
         }
     }
 }
@@ -191,6 +197,12 @@ impl Bind for sqlx::MySql {
             Value::Null(crate::value::Null::BigUInt(..)) => Ok(query.bind(None::<u64>)),
             Value::Null(crate::value::Null::Text(..)) => Ok(query.bind(None::<&'q str>)),
             Value::Null(crate::value::Null::Bytes(..)) => Ok(query.bind(None::<&'q str>)),
+            #[cfg(feature = "use-chrono")]
+            Value::DateTime(val) => Ok(query.bind(val)),
+            #[cfg(feature = "use-chrono")]
+            Value::Null(crate::value::Null::DateTime(..)) => {
+                Ok(query.bind(None::<chrono::DateTime<chrono::Utc>>))
+            }
         }
     }
 }
@@ -225,6 +237,12 @@ impl Bind for sqlx::Sqlite {
             Value::Null(crate::value::Null::BigUInt(..)) => Err(unsupported::<sqlx::Sqlite, u64>()),
             Value::Null(crate::value::Null::Text(..)) => Ok(query.bind(None::<&'q str>)),
             Value::Null(crate::value::Null::Bytes(..)) => Ok(query.bind(None::<&'q str>)),
+            #[cfg(feature = "use-chrono")]
+            Value::DateTime(val) => Ok(query.bind(val)),
+            #[cfg(feature = "use-chrono")]
+            Value::Null(crate::value::Null::DateTime(..)) => {
+                Ok(query.bind(None::<chrono::DateTime<chrono::Utc>>))
+            }
         }
     }
 }

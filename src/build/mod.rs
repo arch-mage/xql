@@ -111,6 +111,12 @@ impl Dialect for Display {
                 }
                 buff.push('"');
             }
+            #[cfg(feature = "use-chrono")]
+            crate::value::Value::DateTime(val) => {
+                buff.push('\'');
+                let _ = write!(buff, "{val}");
+                buff.push('\'');
+            }
         };
         val
     }

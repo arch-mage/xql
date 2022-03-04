@@ -65,6 +65,10 @@ pub enum Value<'a> {
 
     Text(&'a str),
     Bytes(&'a [u8]),
+
+    #[cfg(feature = "use-chrono")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "use-chrono")))]
+    DateTime(chrono::DateTime<chrono::Utc>),
 }
 
 crate::macros::gen_display!(Value<'_>);
@@ -83,6 +87,10 @@ pub enum Null<'a> {
     BigUInt(PhantomData<u64>),
     Text(PhantomData<&'a str>),
     Bytes(PhantomData<&'a [u8]>),
+
+    #[cfg(feature = "use-chrono")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "use-chrono")))]
+    DateTime(PhantomData<chrono::DateTime<chrono::Utc>>),
 }
 
 into_value!(
@@ -95,6 +103,11 @@ into_value!(
     u16 => SmallUInt,
     u32 => UInt,
     u64 => BigUInt,
+);
+
+#[cfg(feature = "use-chrono")]
+into_value!(
+    chrono::DateTime<chrono::Utc> => DateTime,
 );
 
 into_borrowed_value!(
