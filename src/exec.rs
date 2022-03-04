@@ -8,11 +8,11 @@ use sqlx::{
 };
 
 #[cfg(feature = "mysql")]
-use xql_sqlx_mysql::MySql;
+use sqlx::MySql;
 #[cfg(feature = "postgres")]
-use xql_sqlx_postgres::Postgres;
+use sqlx::Postgres;
 #[cfg(feature = "sqlite")]
-use xql_sqlx_sqlite::Sqlite;
+use sqlx::Sqlite;
 
 #[cfg(feature = "sqlx")]
 use crate::{build::Dialect, build::ToSql, stmt::Stmt, value::Value};
