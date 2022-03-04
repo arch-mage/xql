@@ -84,7 +84,7 @@ pub trait Backend: Database + Bind {
         executor: E,
         query: String,
         args: Vec<Value<'v>>,
-    ) -> Pin<Box<dyn 'a + Future<Output = Result<Self::Row, sqlx::Error>>>>
+    ) -> Pin<Box<dyn 'a + Future<Output = Result<Self::Row, sqlx::Error>> + Send>>
     where
         E: 'a + Executor<'c, Database = Self>;
 
@@ -93,7 +93,7 @@ pub trait Backend: Database + Bind {
         executor: E,
         query: String,
         args: Vec<Value<'v>>,
-    ) -> Pin<Box<dyn 'a + Future<Output = Result<Option<Self::Row>, sqlx::Error>>>>
+    ) -> Pin<Box<dyn 'a + Future<Output = Result<Option<Self::Row>, sqlx::Error>> + Send>>
     where
         E: 'a + Executor<'c, Database = Self>;
 
@@ -102,7 +102,7 @@ pub trait Backend: Database + Bind {
         executor: E,
         query: String,
         args: Vec<Value<'v>>,
-    ) -> Pin<Box<dyn 'a + Future<Output = Result<Vec<Self::Row>, sqlx::Error>>>>
+    ) -> Pin<Box<dyn 'a + Future<Output = Result<Vec<Self::Row>, sqlx::Error>> + Send>>
     where
         E: 'a + Executor<'c, Database = Self>;
 
@@ -110,7 +110,7 @@ pub trait Backend: Database + Bind {
         executor: E,
         query: String,
         args: Vec<Value<'v>>,
-    ) -> Pin<Box<dyn 'a + Future<Output = Result<O, sqlx::Error>>>>
+    ) -> Pin<Box<dyn 'a + Future<Output = Result<O, sqlx::Error>> + Send>>
     where
         E: 'a + Executor<'c, Database = Self>,
         O: Send + Unpin + for<'r> FromRow<'r, Self::Row>;
@@ -119,7 +119,7 @@ pub trait Backend: Database + Bind {
         executor: E,
         query: String,
         args: Vec<Value<'v>>,
-    ) -> Pin<Box<dyn 'a + Future<Output = Result<Option<O>, sqlx::Error>>>>
+    ) -> Pin<Box<dyn 'a + Future<Output = Result<Option<O>, sqlx::Error>> + Send>>
     where
         E: 'a + Executor<'c, Database = Self>,
         O: Send + Unpin + for<'r> FromRow<'r, Self::Row>;
@@ -128,7 +128,7 @@ pub trait Backend: Database + Bind {
         executor: E,
         query: String,
         args: Vec<Value<'v>>,
-    ) -> Pin<Box<dyn 'a + Future<Output = Result<Vec<O>, sqlx::Error>>>>
+    ) -> Pin<Box<dyn 'a + Future<Output = Result<Vec<O>, sqlx::Error>> + Send>>
     where
         E: 'a + Executor<'c, Database = Self>,
         O: Send + Unpin + for<'r> FromRow<'r, Self::Row>;
@@ -137,7 +137,7 @@ pub trait Backend: Database + Bind {
         executor: E,
         query: String,
         args: Vec<Value<'v>>,
-    ) -> Pin<Box<dyn 'a + Future<Output = Result<O, sqlx::Error>>>>
+    ) -> Pin<Box<dyn 'a + Future<Output = Result<O, sqlx::Error>> + Send>>
     where
         E: 'a + Executor<'c, Database = Self>,
         O: Send + Unpin,
@@ -147,7 +147,7 @@ pub trait Backend: Database + Bind {
         executor: E,
         query: String,
         args: Vec<Value<'v>>,
-    ) -> Pin<Box<dyn 'a + Future<Output = Result<Option<O>, sqlx::Error>>>>
+    ) -> Pin<Box<dyn 'a + Future<Output = Result<Option<O>, sqlx::Error>> + Send>>
     where
         E: 'a + Executor<'c, Database = Self>,
         O: Send + Unpin,
@@ -157,7 +157,7 @@ pub trait Backend: Database + Bind {
         executor: E,
         query: String,
         args: Vec<Value<'v>>,
-    ) -> Pin<Box<dyn 'a + Future<Output = Result<Vec<O>, sqlx::Error>>>>
+    ) -> Pin<Box<dyn 'a + Future<Output = Result<Vec<O>, sqlx::Error>> + Send>>
     where
         E: 'a + Executor<'c, Database = Self>,
         O: Send + Unpin,
@@ -165,13 +165,13 @@ pub trait Backend: Database + Bind {
 }
 
 #[cfg(any(feature = "postgres", feature = "mysql", feature = "sqlite"))]
-macro_rules! gen_methods {
+macro_rules! gen_backend_methods {
     () => {
         fn fetch_one<'a, 'v: 'a, 'c, E>(
             executor: E,
             query: String,
             args: Vec<Value<'v>>,
-        ) -> Pin<Box<dyn 'a + Future<Output = Result<Self::Row, sqlx::Error>>>>
+        ) -> Pin<Box<dyn 'a + Future<Output = Result<Self::Row, sqlx::Error>> + Send>>
         where
             E: 'a + Executor<'c, Database = Self>,
         {
@@ -187,7 +187,7 @@ macro_rules! gen_methods {
             executor: E,
             query: String,
             args: Vec<Value<'v>>,
-        ) -> Pin<Box<dyn 'a + Future<Output = Result<Option<Self::Row>, sqlx::Error>>>>
+        ) -> Pin<Box<dyn 'a + Future<Output = Result<Option<Self::Row>, sqlx::Error>> + Send>>
         where
             E: 'a + Executor<'c, Database = Self>,
         {
@@ -203,7 +203,7 @@ macro_rules! gen_methods {
             executor: E,
             query: String,
             args: Vec<Value<'v>>,
-        ) -> Pin<Box<dyn 'a + Future<Output = Result<Vec<Self::Row>, sqlx::Error>>>>
+        ) -> Pin<Box<dyn 'a + Future<Output = Result<Vec<Self::Row>, sqlx::Error>> + Send>>
         where
             E: 'a + Executor<'c, Database = Self>,
         {
@@ -219,7 +219,7 @@ macro_rules! gen_methods {
             executor: E,
             query: String,
             args: Vec<Value<'v>>,
-        ) -> Pin<Box<dyn 'a + Future<Output = Result<O, sqlx::Error>>>>
+        ) -> Pin<Box<dyn 'a + Future<Output = Result<O, sqlx::Error>> + Send>>
         where
             E: 'a + Executor<'c, Database = Self>,
             O: Send + Unpin + for<'r> FromRow<'r, Self::Row>,
@@ -236,7 +236,7 @@ macro_rules! gen_methods {
             executor: E,
             query: String,
             args: Vec<Value<'v>>,
-        ) -> Pin<Box<dyn 'a + Future<Output = Result<Option<O>, sqlx::Error>>>>
+        ) -> Pin<Box<dyn 'a + Future<Output = Result<Option<O>, sqlx::Error>> + Send>>
         where
             E: 'a + Executor<'c, Database = Self>,
             O: Send + Unpin + for<'r> FromRow<'r, Self::Row>,
@@ -253,7 +253,7 @@ macro_rules! gen_methods {
             executor: E,
             query: String,
             args: Vec<Value<'v>>,
-        ) -> Pin<Box<dyn 'a + Future<Output = Result<Vec<O>, sqlx::Error>>>>
+        ) -> Pin<Box<dyn 'a + Future<Output = Result<Vec<O>, sqlx::Error>> + Send>>
         where
             E: 'a + Executor<'c, Database = Self>,
             O: Send + Unpin + for<'r> FromRow<'r, Self::Row>,
@@ -270,7 +270,7 @@ macro_rules! gen_methods {
             executor: E,
             query: String,
             args: Vec<Value<'v>>,
-        ) -> Pin<Box<dyn 'a + Future<Output = Result<O, sqlx::Error>>>>
+        ) -> Pin<Box<dyn 'a + Future<Output = Result<O, sqlx::Error>> + Send>>
         where
             E: 'a + Executor<'c, Database = Self>,
             O: Send + Unpin,
@@ -288,7 +288,7 @@ macro_rules! gen_methods {
             executor: E,
             query: String,
             args: Vec<Value<'v>>,
-        ) -> Pin<Box<dyn 'a + Future<Output = Result<Option<O>, sqlx::Error>>>>
+        ) -> Pin<Box<dyn 'a + Future<Output = Result<Option<O>, sqlx::Error>> + Send>>
         where
             E: 'a + Executor<'c, Database = Self>,
             O: Send + Unpin,
@@ -306,7 +306,7 @@ macro_rules! gen_methods {
             executor: E,
             query: String,
             args: Vec<Value<'v>>,
-        ) -> Pin<Box<dyn 'a + Future<Output = Result<Vec<O>, sqlx::Error>>>>
+        ) -> Pin<Box<dyn 'a + Future<Output = Result<Vec<O>, sqlx::Error>> + Send>>
         where
             E: 'a + Executor<'c, Database = Self>,
             O: Send + Unpin,
@@ -325,19 +325,19 @@ macro_rules! gen_methods {
 #[cfg(feature = "postgres")]
 #[cfg_attr(docsrs, doc(cfg(feature = "postgres")))]
 impl Backend for Postgres {
-    gen_methods!();
+    gen_backend_methods!();
 }
 
 #[cfg(feature = "mysql")]
 #[cfg_attr(docsrs, doc(cfg(feature = "mysql")))]
 impl Backend for MySql {
-    gen_methods!();
+    gen_backend_methods!();
 }
 
 #[cfg(feature = "sqlite")]
 #[cfg_attr(docsrs, doc(cfg(feature = "sqlite")))]
 impl Backend for Sqlite {
-    gen_methods!();
+    gen_backend_methods!();
 }
 
 #[cfg(feature = "sqlx")]
