@@ -177,7 +177,7 @@ macro_rules! gen_methods {
         {
             Box::pin(async move {
                 args.into_iter()
-                    .try_fold(sqlx::query(query.as_str()), Self::bind_query)?
+                    .try_fold(sqlx::query(query.as_str()), Self::bind)?
                     .fetch_one(executor)
                     .await
             })
@@ -193,7 +193,7 @@ macro_rules! gen_methods {
         {
             Box::pin(async move {
                 args.into_iter()
-                    .try_fold(sqlx::query(query.as_str()), Self::bind_query)?
+                    .try_fold(sqlx::query(query.as_str()), Self::bind)?
                     .fetch_optional(executor)
                     .await
             })
@@ -209,7 +209,7 @@ macro_rules! gen_methods {
         {
             Box::pin(async move {
                 args.into_iter()
-                    .try_fold(sqlx::query(query.as_str()), Self::bind_query)?
+                    .try_fold(sqlx::query(query.as_str()), Self::bind)?
                     .fetch_all(executor)
                     .await
             })
@@ -226,7 +226,7 @@ macro_rules! gen_methods {
         {
             Box::pin(async move {
                 args.into_iter()
-                    .try_fold(sqlx::query_as(query.as_str()), Self::bind_query_as)?
+                    .try_fold(sqlx::query_as(query.as_str()), Self::bind)?
                     .fetch_one(executor)
                     .await
             })
@@ -243,7 +243,7 @@ macro_rules! gen_methods {
         {
             Box::pin(async move {
                 args.into_iter()
-                    .try_fold(sqlx::query_as(query.as_str()), Self::bind_query_as)?
+                    .try_fold(sqlx::query_as(query.as_str()), Self::bind)?
                     .fetch_optional(executor)
                     .await
             })
@@ -260,7 +260,7 @@ macro_rules! gen_methods {
         {
             Box::pin(async move {
                 args.into_iter()
-                    .try_fold(sqlx::query_as(query.as_str()), Self::bind_query_as)?
+                    .try_fold(sqlx::query_as(query.as_str()), Self::bind)?
                     .fetch_all(executor)
                     .await
             })
@@ -278,7 +278,7 @@ macro_rules! gen_methods {
         {
             Box::pin(async move {
                 args.into_iter()
-                    .try_fold(sqlx::query_scalar(query.as_str()), Self::bind_query_scalar)?
+                    .try_fold(sqlx::query_scalar(query.as_str()), Self::bind)?
                     .fetch_one(executor)
                     .await
             })
@@ -296,7 +296,7 @@ macro_rules! gen_methods {
         {
             Box::pin(async move {
                 args.into_iter()
-                    .try_fold(sqlx::query_scalar(query.as_str()), Self::bind_query_scalar)?
+                    .try_fold(sqlx::query_scalar(query.as_str()), Self::bind)?
                     .fetch_optional(executor)
                     .await
             })
@@ -314,7 +314,7 @@ macro_rules! gen_methods {
         {
             Box::pin(async move {
                 args.into_iter()
-                    .try_fold(sqlx::query_scalar(query.as_str()), Self::bind_query_scalar)?
+                    .try_fold(sqlx::query_scalar(query.as_str()), Self::bind)?
                     .fetch_all(executor)
                     .await
             })
