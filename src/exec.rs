@@ -1,13 +1,11 @@
-use std::future::Future;
-use std::pin::Pin;
+#[cfg(feature = "sqlx")]
+use std::{future::Future, pin::Pin};
 
-use sqlx::database::HasArguments;
-use sqlx::query::Query;
-use sqlx::query::QueryAs;
-use sqlx::query::QueryScalar;
-use sqlx::Database;
-use sqlx::Executor;
-use sqlx::FromRow;
+#[cfg(feature = "sqlx")]
+use sqlx::{
+    database::HasArguments, query::Query, query::QueryAs, query::QueryScalar, Database, Executor,
+    FromRow,
+};
 
 #[cfg(feature = "mysql")]
 use xql_sqlx_mysql::MySql;
@@ -16,10 +14,8 @@ use xql_sqlx_postgres::Postgres;
 #[cfg(feature = "sqlite")]
 use xql_sqlx_sqlite::Sqlite;
 
-use crate::build::Dialect;
-use crate::build::ToSql;
-use crate::stmt::Stmt;
-use crate::value::Value;
+#[cfg(feature = "sqlx")]
+use crate::{build::Dialect, build::ToSql, stmt::Stmt, value::Value};
 
 #[cfg(any(feature = "postgres", feature = "mysql", feature = "sqlite"))]
 use crate::value::Null;
@@ -97,10 +93,14 @@ fn unsupported<DB, T>() -> sqlx::Error {
     ))
 }
 
+#[cfg(feature = "sqlx")]
+#[cfg_attr(docsrs, doc(cfg(feature = "sqlx")))]
 pub trait Bind<'q>: Sized {
     fn bind(self, value: Value<'q>) -> Result<Self, sqlx::Error>;
 }
 
+#[cfg(feature = "sqlx")]
+#[cfg_attr(docsrs, doc(cfg(feature = "sqlx")))]
 pub trait Backend: Database {
     fn bind_query<'q>(
         query: Query<'q, Self, <Self as HasArguments<'q>>::Arguments>,
@@ -386,23 +386,28 @@ macro_rules! gen_binds {
 }
 
 #[cfg(feature = "postgres")]
+#[cfg_attr(docsrs, doc(cfg(feature = "postgres")))]
 impl Backend for Postgres {
     gen_methods!();
     gen_binds!(binding_postgres);
 }
 
 #[cfg(feature = "mysql")]
+#[cfg_attr(docsrs, doc(cfg(feature = "mysql")))]
 impl Backend for MySql {
     gen_methods!();
     gen_binds!(binding_mysql);
 }
 
 #[cfg(feature = "sqlite")]
+#[cfg_attr(docsrs, doc(cfg(feature = "sqlite")))]
 impl Backend for Sqlite {
     gen_methods!();
     gen_binds!(binding_sqlite);
 }
 
+#[cfg(feature = "sqlx")]
+#[cfg_attr(docsrs, doc(cfg(feature = "sqlx")))]
 pub async fn fetch_one<'c, 'v, DB, E, S>(stmt: S, executor: E) -> Result<DB::Row, sqlx::Error>
 where
     S: Into<Stmt<'v>>,
@@ -413,6 +418,8 @@ where
     E::Database::fetch_one(executor, sql, args).await
 }
 
+#[cfg(feature = "sqlx")]
+#[cfg_attr(docsrs, doc(cfg(feature = "sqlx")))]
 pub async fn fetch_optional<'c, 'v, DB, E, S>(
     stmt: S,
     executor: E,
@@ -426,6 +433,8 @@ where
     E::Database::fetch_optional(executor, sql, args).await
 }
 
+#[cfg(feature = "sqlx")]
+#[cfg_attr(docsrs, doc(cfg(feature = "sqlx")))]
 pub async fn fetch_all<'c, 'v, DB, E, S>(stmt: S, executor: E) -> Result<Vec<DB::Row>, sqlx::Error>
 where
     S: Into<Stmt<'v>>,
@@ -436,6 +445,8 @@ where
     E::Database::fetch_all(executor, sql, args).await
 }
 
+#[cfg(feature = "sqlx")]
+#[cfg_attr(docsrs, doc(cfg(feature = "sqlx")))]
 pub async fn fetch_one_as<'c, 'v, O, E, S>(stmt: S, executor: E) -> Result<O, sqlx::Error>
 where
     S: Into<Stmt<'v>>,
@@ -447,6 +458,8 @@ where
     E::Database::fetch_one_as(executor, sql, args).await
 }
 
+#[cfg(feature = "sqlx")]
+#[cfg_attr(docsrs, doc(cfg(feature = "sqlx")))]
 pub async fn fetch_optional_as<'c, 'v, O, E, S>(
     stmt: S,
     executor: E,
@@ -461,6 +474,8 @@ where
     E::Database::fetch_optional_as(executor, sql, args).await
 }
 
+#[cfg(feature = "sqlx")]
+#[cfg_attr(docsrs, doc(cfg(feature = "sqlx")))]
 pub async fn fetch_all_as<'c, 'v, O, E, S>(stmt: S, executor: E) -> Result<Vec<O>, sqlx::Error>
 where
     S: Into<Stmt<'v>>,
@@ -472,6 +487,8 @@ where
     E::Database::fetch_all_as(executor, sql, args).await
 }
 
+#[cfg(feature = "sqlx")]
+#[cfg_attr(docsrs, doc(cfg(feature = "sqlx")))]
 pub async fn fetch_one_scalar<'c, 'v, O, E, S>(stmt: S, executor: E) -> Result<O, sqlx::Error>
 where
     S: Into<Stmt<'v>>,
@@ -484,6 +501,8 @@ where
     E::Database::fetch_one_scalar(executor, sql, args).await
 }
 
+#[cfg(feature = "sqlx")]
+#[cfg_attr(docsrs, doc(cfg(feature = "sqlx")))]
 pub async fn fetch_optional_scalar<'c, 'v, O, E, S>(
     stmt: S,
     executor: E,
@@ -499,6 +518,8 @@ where
     E::Database::fetch_optional_scalar(executor, sql, args).await
 }
 
+#[cfg(feature = "sqlx")]
+#[cfg_attr(docsrs, doc(cfg(feature = "sqlx")))]
 pub async fn fetch_all_scalar<'c, 'v, O, E, S>(stmt: S, executor: E) -> Result<Vec<O>, sqlx::Error>
 where
     S: Into<Stmt<'v>>,

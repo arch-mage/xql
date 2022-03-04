@@ -12,8 +12,6 @@ pub mod stmt;
 pub mod table_expr;
 pub mod value;
 
-#[cfg(feature = "sqlx")]
-#[cfg_attr(docsrs, doc(cfg(feature = "sqlx")))]
 pub mod exec;
 
 mod build;

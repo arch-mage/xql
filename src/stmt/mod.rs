@@ -86,14 +86,14 @@ macro_rules! stmt_common {
     };
 }
 
-pub(crate) mod binary;
-pub(crate) mod data;
-pub(crate) mod delete;
-pub(crate) mod insert;
-pub(crate) mod result;
-pub(crate) mod select;
-pub(crate) mod update;
-pub(crate) mod values;
+pub mod binary;
+pub mod data;
+pub mod delete;
+pub mod insert;
+pub mod result;
+pub mod select;
+pub mod update;
+pub mod values;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Stmt<'a> {
