@@ -69,6 +69,10 @@ pub enum Value<'a> {
     #[cfg(feature = "use-chrono")]
     #[cfg_attr(docsrs, doc(cfg(feature = "use-chrono")))]
     DateTime(chrono::DateTime<chrono::Utc>),
+
+    #[cfg(feature = "use-decimal")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "use-decimal")))]
+    Numeric(rust_decimal::Decimal),
 }
 
 crate::macros::gen_display!(Value<'_>);
@@ -91,6 +95,10 @@ pub enum Null<'a> {
     #[cfg(feature = "use-chrono")]
     #[cfg_attr(docsrs, doc(cfg(feature = "use-chrono")))]
     DateTime(PhantomData<chrono::DateTime<chrono::Utc>>),
+
+    #[cfg(feature = "use-decimal")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "use-decimal")))]
+    Numeric(PhantomData<rust_decimal::Decimal>),
 }
 
 into_value!(
@@ -108,6 +116,11 @@ into_value!(
 #[cfg(feature = "use-chrono")]
 into_value!(
     chrono::DateTime<chrono::Utc> => DateTime,
+);
+
+#[cfg(feature = "use-decimal")]
+into_value!(
+    rust_decimal::Decimal => Numeric,
 );
 
 into_borrowed_value!(

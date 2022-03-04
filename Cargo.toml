@@ -21,6 +21,7 @@ postgres = ["sqlx/postgres"]
 mysql = ["sqlx/mysql"]
 sqlite = ["sqlx/sqlite"]
 use-chrono = ["sqlx/chrono", "chrono"]
+use-decimal = ["sqlx/decimal", "rust_decimal"]
 
 [dependencies.sqlx]
 version = "0.5"
@@ -30,6 +31,11 @@ optional = true
 
 [dependencies.chrono]
 version = "0.4"
+default-features = false
+optional = true
+
+[dependencies.rust_decimal]
+version = "1.22"
 default-features = false
 optional = true
 

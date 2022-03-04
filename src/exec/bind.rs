@@ -163,6 +163,12 @@ impl Bind for sqlx::Postgres {
             Value::Null(crate::value::Null::DateTime(..)) => {
                 Ok(query.bind(None::<chrono::DateTime<chrono::Utc>>))
             }
+            #[cfg(feature = "use-decimal")]
+            Value::Numeric(val) => Ok(query.bind(val)),
+            #[cfg(feature = "use-decimal")]
+            Value::Null(crate::value::Null::Numeric(..)) => {
+                Ok(query.bind(None::<rust_decimal::Decimal>))
+            }
         }
     }
 }
@@ -202,6 +208,12 @@ impl Bind for sqlx::MySql {
             #[cfg(feature = "use-chrono")]
             Value::Null(crate::value::Null::DateTime(..)) => {
                 Ok(query.bind(None::<chrono::DateTime<chrono::Utc>>))
+            }
+            #[cfg(feature = "use-decimal")]
+            Value::Numeric(val) => Ok(query.bind(val)),
+            #[cfg(feature = "use-decimal")]
+            Value::Null(crate::value::Null::Numeric(..)) => {
+                Ok(query.bind(None::<rust_decimal::Decimal>))
             }
         }
     }
@@ -243,6 +255,10 @@ impl Bind for sqlx::Sqlite {
             Value::Null(crate::value::Null::DateTime(..)) => {
                 Ok(query.bind(None::<chrono::DateTime<chrono::Utc>>))
             }
+            #[cfg(feature = "use-decimal")]
+            Value::Numeric(..) => Err(unsupported::<sqlx::Sqlite, u64>()),
+            #[cfg(feature = "use-decimal")]
+            Value::Null(crate::value::Null::Numeric(..)) => Err(unsupported::<sqlx::Sqlite, u64>()),
         }
     }
 }

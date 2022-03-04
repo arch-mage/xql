@@ -117,6 +117,11 @@ impl Dialect for Display {
                 let _ = write!(buff, "{val}");
                 buff.push('\'');
             }
+
+            #[cfg(feature = "use-decimal")]
+            crate::value::Value::Numeric(val) => {
+                let _ = write!(buff, "{val}");
+            }
         };
         val
     }
