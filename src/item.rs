@@ -2,7 +2,7 @@ use crate::expr::Expr;
 use crate::table_expr::TableExpr;
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
-pub struct Ident<'a>(pub(crate) &'a str);
+pub struct Ident<'a>(pub &'a str);
 
 crate::macros::gen_display!(Ident<'_>);
 
