@@ -13,6 +13,17 @@ impl<'a> std::convert::From<&'a str> for Ident<'a> {
     }
 }
 
+impl<'a> std::convert::From<ColumnRef<'a>> for Ident<'a> {
+    #[inline]
+    fn from(val: ColumnRef<'a>) -> Self {
+        match val {
+            ColumnRef::Column(col) => col,
+            ColumnRef::TableColumn(.., col) => col,
+            ColumnRef::SchemaTableColumn(.., col) => col,
+        }
+    }
+}
+
 #[allow(clippy::enum_variant_names)]
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum ColumnRef<'a> {

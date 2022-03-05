@@ -13,6 +13,7 @@ pub mod table_expr;
 pub mod value;
 
 pub mod exec;
+pub mod schema;
 
 mod build;
 mod macros;
@@ -40,3 +41,7 @@ pub use ops::{ilike, isnull, like};
 pub use ops::{cross_join, join, natural_join};
 pub use ops::{full_join, left_join, right_join};
 pub use ops::{natural_full_join, natural_left_join, natural_right_join};
+
+#[cfg(feature = "derive")]
+#[cfg_attr(docsrs, doc(cfg(feature = "derive")))]
+pub use schema::Schema;
