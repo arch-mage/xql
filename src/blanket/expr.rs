@@ -110,6 +110,19 @@ pub trait ExprExt<'a>: Sized + Into<Expr<'a>> {
     fn asc(self) -> Order<'a> {
         crate::ops::asc(self)
     }
+
+    /// A short hand for [`xql::ops::desc`](crate::ops::desc).
+    ///
+    /// ```
+    /// use xql::ops::desc;
+    /// use xql::blanket::ExprExt;
+    ///
+    /// assert_eq!("id".desc(), desc("id"));
+    /// ```
+    #[inline]
+    fn desc(self) -> Order<'a> {
+        crate::ops::desc(self)
+    }
 }
 
 impl<'a, T> ExprExt<'a> for T where T: Into<Expr<'a>> {}
