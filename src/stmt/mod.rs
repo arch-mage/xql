@@ -13,6 +13,11 @@ macro_rules! stmt_common {
         }
 
         impl<'a> $stmt<'a> {
+            /// Add [`With`](crate::clause::With) clause to the statement.
+            ///
+            /// ```sql
+            /// WITH name AS (stmt) ...
+            /// ```
             pub fn with<N, S>(mut self, name: N, stmt: S) -> $stmt<'a>
             where
                 N: Into<$crate::item::Ident<'a>>,
@@ -39,6 +44,11 @@ macro_rules! stmt_common {
                 self
             }
 
+            /// Add [`With`](crate::clause::With) clause to the statement.
+            ///
+            /// ```sql
+            /// WITH name(fields ...) AS (stmt) ...
+            /// ```
             pub fn with_labeled<N, C, I, S>(mut self, name: N, fields: I, stmt: S) -> $stmt<'a>
             where
                 N: Into<$crate::item::Ident<'a>>,
@@ -67,6 +77,17 @@ macro_rules! stmt_common {
                 self
             }
 
+            /// Turns the [`With`](crate::clause::With) into recursive.
+            ///
+            /// ```sql
+            /// WITH name AS (stmt) ...
+            /// ```
+            ///
+            /// become:
+            ///
+            /// ```sql
+            /// WITH RECUSRIVE name AS (stmt) ...
+            /// ```
             pub fn recursive(mut self) -> $stmt<'a> {
                 if let Some(mut with) = self.with {
                     with.0 = true;
@@ -75,6 +96,17 @@ macro_rules! stmt_common {
                 self
             }
 
+            /// Turns the recursive [`With`](crate::clause::With) into non recursive.
+            ///
+            /// ```sql
+            /// WITH RECURSIVE name AS (stmt) ...
+            /// ```
+            ///
+            /// become:
+            ///
+            /// ```sql
+            /// WITH name AS (stmt) ...
+            /// ```
             pub fn no_recursive(mut self) -> $stmt<'a> {
                 if let Some(mut with) = self.with {
                     with.0 = false;

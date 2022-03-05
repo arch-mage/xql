@@ -47,6 +47,8 @@ macro_rules! gen_method {
     };
 }
 
+/// Extends anything that can be converted to
+/// [`TableExpr`](crate::table_expr::TableExpr) with it's related functions.
 pub trait TableExprExt<'a>: Into<crate::table_expr::TableExpr<'a>> {
     gen_method!(join cond);
     gen_method!(left_join cond);

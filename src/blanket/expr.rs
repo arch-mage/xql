@@ -35,6 +35,8 @@ macro_rules! gen_method {
     };
 }
 
+/// Extends anything that can be converted to [`Expr`](crate::expr::Expr) with
+/// it's related functions.
 pub trait ExprExt<'a>: Sized + Into<Expr<'a>> {
     gen_method!(eq);
     gen_method!(eq as equal);

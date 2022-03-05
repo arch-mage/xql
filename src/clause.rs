@@ -7,6 +7,7 @@ use crate::item::Row;
 use crate::item::Table;
 use crate::item::TableRef;
 
+/// Represent a `WITH` clause.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct With<'a>(pub(crate) bool, pub(crate) Vec<Cte<'a>>);
 

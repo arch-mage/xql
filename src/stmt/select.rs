@@ -51,12 +51,12 @@ impl<'a> Select<'a> {
     /// use xql::eq;
     ///
     /// let query1 = select([("book", "id"), ("author", "id")])
-    ///     .from(["book", "id"])
+    ///     .from(["book", "author"])
     ///     .filter(eq(("book", "id"), ("author", "id")));
     ///
     /// let query2 = select([("book", "id"), ("author", "id")])
     ///     .from("book")
-    ///     .from("id")
+    ///     .from("author")
     ///     .filter(eq(("book", "id"), ("author", "id")));
     ///
     /// assert_eq!(query1, query2);
@@ -109,6 +109,24 @@ impl<'a> Select<'a> {
         self
     }
 
+    /// Add more condition(s) to `GROUP BY` clause.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use xql::select;
+    /// use xql::eq;
+    ///
+    /// let query1 = select(["id", "title"])
+    ///     .from("book")
+    ///     .group_by("id")
+    ///     .group_by("title");
+    ///
+    /// let query2 = select(["id", "title"])
+    ///     .from("book")
+    ///     .group_by(["id", "title"]);
+    ///
+    /// ```
     pub fn group_by<G>(mut self, groups: G) -> Select<'a>
     where
         G: Into<clause::GroupBy<'a>>,
@@ -123,6 +141,29 @@ impl<'a> Select<'a> {
         self
     }
 
+    /// Set condition to `HAVING` clause.
+    ///
+    /// Successive calls combine new condition with previous condition with
+    /// [`and`](crate::ops::and).
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use xql::select;
+    /// use xql::and;
+    /// use xql::ge;
+    ///
+    /// let query1 = select(["id", "year", "name"])
+    ///     .from("book")
+    ///     .having(and(ge("id", 1), ge("year", 1970)));
+    ///
+    /// let query2 = select(["id", "year", "name"])
+    ///     .from("book")
+    ///     .having(ge("id", 1))
+    ///     .having(ge("year", 1970));
+    ///
+    /// assert_eq!(query1, query2);
+    /// ```
     pub fn having<E>(mut self, expr: E) -> Select<'a>
     where
         E: Into<Expr<'a>>,
