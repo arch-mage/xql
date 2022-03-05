@@ -2,6 +2,11 @@
 name = "xql-derive"
 version = "0.1.0"
 edition = "2021"
+license = "GPL-3.0-or-later"
+description = "xql derive macro"
+homepage = "https://github.com/arch-mage/xql"
+repository = "https://github.com/arch-mage/xql"
+documentation = "https://docs.rs/xql"
 
 [lib]
 proc-macro = true
