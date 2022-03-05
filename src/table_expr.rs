@@ -24,6 +24,13 @@ pub enum TableExpr<'a> {
 
 crate::macros::gen_display!(TableExpr<'_>);
 
+impl<'a> std::convert::From<TableRef<'a>> for TableExpr<'a> {
+    #[inline]
+    fn from(val: TableRef<'a>) -> Self {
+        TableExpr::TableRef(val)
+    }
+}
+
 impl<'a> std::convert::From<&'a str> for TableExpr<'a> {
     #[inline]
     fn from(val: &'a str) -> Self {

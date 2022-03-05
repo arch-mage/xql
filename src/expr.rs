@@ -20,6 +20,13 @@ pub enum Expr<'a> {
 
 crate::macros::gen_display!(Expr<'_>);
 
+impl<'a> std::convert::From<ColumnRef<'a>> for Expr<'a> {
+    #[inline]
+    fn from(val: ColumnRef<'a>) -> Self {
+        Expr::Column(val)
+    }
+}
+
 impl<'a> std::convert::From<&'a str> for Expr<'a> {
     #[inline]
     fn from(val: &'a str) -> Self {
